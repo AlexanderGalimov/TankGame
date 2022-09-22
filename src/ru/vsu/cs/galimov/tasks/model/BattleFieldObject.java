@@ -1,9 +1,9 @@
-package ru.vsu.cs.galimov.tasks.BFObject;
+package ru.vsu.cs.galimov.tasks.model;
 
-import ru.vsu.cs.galimov.tasks.MovableObjects.Position;
+import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
-abstract class BattleFieldObject{
-    private Position position;
+public abstract class BattleFieldObject{
+    protected Position position;
 
     public BattleFieldObject(Position position) {
         this.position = position;
