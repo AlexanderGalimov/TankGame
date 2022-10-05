@@ -1,34 +1,33 @@
 package ru.vsu.cs.galimov.tasks.model.movable;
 
+import ru.vsu.cs.galimov.tasks.draw.DrawUtils;
+import ru.vsu.cs.galimov.tasks.draw.Drawable;
 import ru.vsu.cs.galimov.tasks.model.Destroyable;
 
-import java.util.Timer;
+import java.awt.*;
 
-public class Bullet extends MovableObject implements Destroyable {
-    private Timer timer = new Timer();
+public class Bullet extends MovableObject implements Destroyable, Drawable {
+    private int conditionIndex = 1;
 
     public Bullet(Position position, MoveParameters mp) {
         super(position, mp);
     }
 
-    public void move() {
-        if (this.getMp().getDirection() == MoveDirections.UP) {
-           /* this.setPosition(new Position(this.getPosition().x(), this.getPosition().y() + this.getMp().getVelocity()));*/
-        } else if (this.getMp().getDirection() == MoveDirections.DOWN) {
-            /*this.setPosition(new Position(this.getPosition().x(), this.getPosition().y() - this.getMp().getVelocity()));*/
-        } else if (this.getMp().getDirection() == MoveDirections.LEFT) {
-           /* this.setPosition(new Position(this.getPosition().x() - this.getMp().getVelocity(), this.getPosition().y()));*/
-        } else if (this.getMp().getDirection() == MoveDirections.RIGHT) {
-           /* this.setPosition(new Position(this.getPosition().x() + this.getMp().getVelocity(), this.getPosition().y() + this.getMp().getVelocity()));*/
-        }
+
+    public boolean destroy(Bullet bullet) {
+        return this.getPosition().x() == bullet.getPosition().x() && this.getPosition().y() == bullet.getPosition().y();
     }
 
     @Override
-    public boolean destroy(Bullet bullet) {
-        if(this.getPosition().x() == bullet.getPosition().x() || this.getPosition().y() == bullet.getPosition().y()){
-            System.out.println("bullet destroyed");
-            return true;
-        }
-        return false;
+    public void draw(Graphics2D graphics2D) {
+        DrawUtils.drawBullet(graphics2D,getPosition(),conditionIndex);
+    }
+
+    public int getConditionIndex() {
+        return conditionIndex;
+    }
+
+    public void setConditionIndex(int conditionIndex) {
+        this.conditionIndex = conditionIndex;
     }
 }

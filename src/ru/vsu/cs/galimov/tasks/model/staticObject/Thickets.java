@@ -7,14 +7,13 @@ import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
 import java.awt.*;
 
-public class UndestroyableWall extends BattleFieldObject implements Drawable {
-
-    public UndestroyableWall(Position position) {
+public class Thickets extends BattleFieldObject implements Drawable {
+    public Thickets(Position position) {
         super(position);
     }
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        DrawUtils.drawUndestroyableWall(graphics2D,getPosition());
+        DrawUtils.drawThickets(graphics2D, getPosition());
     }
 }

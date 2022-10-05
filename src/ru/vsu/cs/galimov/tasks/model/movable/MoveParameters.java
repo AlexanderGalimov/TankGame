@@ -2,7 +2,7 @@ package ru.vsu.cs.galimov.tasks.model.movable;
 
 public class MoveParameters {
     private MoveDirections direction = MoveDirections.NONE;
-    private int velocity = 0;   // создать класс скорости или ограничить
+    private int velocity;
 
     public MoveParameters(int velocity) {
         this.velocity = velocity;

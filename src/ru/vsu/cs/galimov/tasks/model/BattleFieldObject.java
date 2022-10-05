@@ -16,4 +16,6 @@ public abstract class BattleFieldObject{
     public void setPosition(Position position) {
         this.position = position;
     }
+
+
 }
