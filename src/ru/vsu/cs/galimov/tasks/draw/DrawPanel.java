@@ -1,9 +1,6 @@
 package ru.vsu.cs.galimov.tasks.draw;
 
-import ru.vsu.cs.galimov.tasks.model.movable.Bullet;
-import ru.vsu.cs.galimov.tasks.model.movable.MoveDirections;
-import ru.vsu.cs.galimov.tasks.model.movable.Position;
-import ru.vsu.cs.galimov.tasks.model.movable.Tank;
+import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Thickets;
 import ru.vsu.cs.galimov.tasks.model.staticObject.UndestroyableWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
@@ -59,7 +56,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), -50, 0)) {
+                    if (!layering(player1.getTank(), -50, 0) && !tankLayering(player1.getTank(),player2.getTank(), -50, 0)) {
                         player1.getTank().getMp().setDirection(MoveDirections.LEFT);
                         player1.getTank().setConditionIndex(1);
                         player1.getTank().move();
@@ -76,7 +73,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), 50, 0)) {
+                    if (!layering(player1.getTank(), 50, 0) && !tankLayering(player1.getTank(),player2.getTank(), 50, 0)) {
                         player1.getTank().getMp().setDirection(MoveDirections.RIGHT);
                         player1.getTank().setConditionIndex(2);
                         player1.getTank().move();
@@ -93,7 +90,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), 0, -50)) {
+                    if (!layering(player1.getTank(), 0, -50)&& !tankLayering(player1.getTank(),player2.getTank(), 0, -50)) {
                         player1.getTank().getMp().setDirection(MoveDirections.UP);
                         player1.getTank().setConditionIndex(3);
                         player1.getTank().move();
@@ -109,7 +106,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), 0, 50)) {
+                    if (!layering(player1.getTank(), 0, 50)&& !tankLayering(player1.getTank(),player2.getTank(),0, 50)) {
                         player1.getTank().getMp().setDirection(MoveDirections.DOWN);
                         player1.getTank().setConditionIndex(4);
                         player1.getTank().move();
@@ -126,7 +123,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), -50, 0)) {
+                    if (!layering(player2.getTank(), -50, 0) && !tankLayering(player2.getTank(),player1.getTank(), -50, 0)) {
                         player2.getTank().getMp().setDirection(MoveDirections.LEFT);
                         player2.getTank().setConditionIndex(1);
                         player2.getTank().move();
@@ -142,7 +139,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), 50, 0)) {
+                    if (!layering(player2.getTank(), 50, 0) && !tankLayering(player2.getTank(),player1.getTank(), 50, 0)) {
                         player2.getTank().getMp().setDirection(MoveDirections.RIGHT);
                         player2.getTank().setConditionIndex(2);
                         player2.getTank().move();
@@ -159,7 +156,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), 0, -50)) {
+                    if (!layering(player2.getTank(), 0, -50) && !tankLayering(player2.getTank(),player1.getTank(), 0, -50)) {
                         player2.getTank().getMp().setDirection(MoveDirections.UP);
                         player2.getTank().setConditionIndex(3);
                         player2.getTank().move();
@@ -176,7 +173,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), 0, 50)) {
+                    if (!layering(player2.getTank(), 0, 50) && !tankLayering(player2.getTank(),player1.getTank(), 0, 50)) {
                         player2.getTank().getMp().setDirection(MoveDirections.DOWN);
                         player2.getTank().setConditionIndex(4);
                         player2.getTank().move();
@@ -260,8 +257,13 @@ public class DrawPanel extends JPanel {
                 return true;
             }
         }
+
+        return false;
+    }
+
+    public boolean tankLayering(Tank tank1, Tank tank2, int changeX, int changeY){
         if(player1.isCondition() && player2.isCondition()){
-            if (checkIntersects(new Position(player1.getTank().getPosition().x(), player1.getTank().getPosition().y()), new Position(player2.getTank().getPosition().x() + changeX, player2.getTank().getPosition().y() + changeY)) || checkIntersects(new Position(player1.getTank().getPosition().x() + changeX, player1.getTank().getPosition().y() + changeY), new Position(player2.getTank().getPosition().x(), player2.getTank().getPosition().y()))) {
+            if (checkIntersects(new Position(tank2.getPosition().x(), tank2.getPosition().y()), new Position(tank1.getPosition().x() + changeX, tank1.getPosition().y() + changeY))) {
                 return true;
             }
         }
@@ -314,7 +316,9 @@ public class DrawPanel extends JPanel {
         for (int i = 0; i < player1.getBullets().size(); i++) {
             for (int j = 0; j < player2.getBullets().size(); j++) {
                 if(player1.isCondition()){
-                    if(player1.getBullets().get(i).destroy(player2.getBullets().get(j))){
+                    if(player1.getBullets().get(i).destroy(player2.getBullets().get(j))
+                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() + 50, player2.getBullets().get(j).getPosition().y()),new MoveParameters(50)))
+                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() - 50, player2.getBullets().get(j).getPosition().y()),new MoveParameters(50)))){
                         player1.getBullets().remove(i);
                         player2.getBullets().remove(j);
                         update();

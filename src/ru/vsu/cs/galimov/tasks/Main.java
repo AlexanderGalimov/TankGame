@@ -10,6 +10,6 @@ public class Main {
         mainWindow.setVisible(true);
 
         /*MainBattleField field = new MainBattleField();
-        field/*/
+        field.initializeGame();*/
     }
 }
