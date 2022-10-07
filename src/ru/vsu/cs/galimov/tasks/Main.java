@@ -2,6 +2,7 @@ package ru.vsu.cs.galimov.tasks;
 
 import ru.vsu.cs.galimov.tasks.draw.DrawPanel;
 import ru.vsu.cs.galimov.tasks.draw.MainWindow;
+import ru.vsu.cs.galimov.tasks.field.MainBattleField;
 
 public class Main {
 

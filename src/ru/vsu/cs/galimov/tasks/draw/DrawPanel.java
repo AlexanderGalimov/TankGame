@@ -270,7 +270,6 @@ public class DrawPanel extends JPanel {
         return false;
     }
 
-
     private void checkDestroy(List<Bullet> bullets) {
         for (int i = 0; i < bullets.size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
@@ -330,7 +329,9 @@ public class DrawPanel extends JPanel {
     }
 
     private void update() {
+        this.removeAll();
         this.repaint();
+        this.revalidate();
     }
 
     private void initAllObjects() {
@@ -366,6 +367,7 @@ public class DrawPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         drawGrid(g2d);
 
