@@ -13,7 +13,7 @@ public class MainBattleField {
     private Position oldPosition = new Position(0, 0);
     private final List<Bullet> bullets = new ArrayList<>();
     private final Scanner sc = new Scanner(System.in);
-    private final List<UndestroyableWall> indestrictibleWall = new ArrayList<>();
+    private final List<UndestroyableWall> indestructibleWall = new ArrayList<>();
     private final List<Wall> walls = new ArrayList<>();
     private boolean isFire = false;
 
@@ -71,7 +71,7 @@ public class MainBattleField {
     }
 
     public boolean checkLayering(Tank tank, int changeX, int changeY) {
-        for (UndestroyableWall undestroyableWall : indestrictibleWall) {
+        for (UndestroyableWall undestroyableWall : indestructibleWall) {
             if (intersects(undestroyableWall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
                 return true;
             }
@@ -103,7 +103,7 @@ public class MainBattleField {
         }
 
         for (int i = 0; i < bullets.size(); i++) {
-            for (UndestroyableWall undestroyableWall : indestrictibleWall) {
+            for (UndestroyableWall undestroyableWall : indestructibleWall) {
                 if (bullets.get(i).destroy(undestroyableWall.getPosition(), bullets.get(i))) {
                     bullets.remove(i);
                     break;
@@ -122,25 +122,25 @@ public class MainBattleField {
         UndestroyableWall wall;
         for (int i = 0; i < field[0].length; i++) {
             wall = new UndestroyableWall(new Position(0, i));
-            indestrictibleWall.add(wall);
+            indestructibleWall.add(wall);
         }
 
         for (int i = 0; i < field[0].length; i++) {
             wall = new UndestroyableWall(new Position(field.length - 1, i));
-            indestrictibleWall.add(wall);
+            indestructibleWall.add(wall);
         }
 
         for (int i = 0; i < field.length; i++) {
             wall = new UndestroyableWall(new Position(i, 0));
-            indestrictibleWall.add(wall);
+            indestructibleWall.add(wall);
         }
 
         for (int i = 0; i < field.length; i++) {
             wall = new UndestroyableWall(new Position(i, field[0].length - 1));
-            indestrictibleWall.add(wall);
+            indestructibleWall.add(wall);
         }
 
-        for (UndestroyableWall undestroyableWall : indestrictibleWall) {
+        for (UndestroyableWall undestroyableWall : indestructibleWall) {
             field[undestroyableWall.getPosition().y()][undestroyableWall.getPosition().x()] = 'D';
         }
 
