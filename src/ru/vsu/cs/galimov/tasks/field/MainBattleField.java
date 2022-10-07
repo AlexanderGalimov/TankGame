@@ -1,57 +1,117 @@
 package ru.vsu.cs.galimov.tasks.field;
 
 import ru.vsu.cs.galimov.tasks.model.movable.*;
+import ru.vsu.cs.galimov.tasks.model.staticObject.UndestroyableWall;
+import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
+import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
 import java.util.*;
 
 public class MainBattleField {
     private final char[][] field = new char[11][11];
-    private Player player = new Player(null,null,false);
-    private Position oldPosition = new Position(0,0);
-    private MoveDirections oldDirection = MoveDirections.NONE;
+    private final Player player = new Player(null, null, false);
+    private Position oldPosition = new Position(0, 0);
     private final List<Bullet> bullets = new ArrayList<>();
     private final Scanner sc = new Scanner(System.in);
+    private final List<UndestroyableWall> indestrictibleWall = new ArrayList<>();
+    private final List<Wall> walls = new ArrayList<>();
+    private boolean isFire = false;
 
     private boolean inputKey() {
         String str = sc.next();
         if (Objects.equals(str, "w")) {
-            player.getTank().getMp().setDirection(MoveDirections.UP);
+            if (!checkLayering(player.getTank(), 0, -1)) {
+                player.getTank().getMp().setDirection(MoveDirections.UP);
+                player.getTank().move();
+            }
             return true;
         } else if (Objects.equals(str, "s")) {
-            player.getTank().getMp().setDirection(MoveDirections.DOWN);
+            if (!checkLayering(player.getTank(), 0, 1)) {
+                player.getTank().getMp().setDirection(MoveDirections.DOWN);
+                player.getTank().move();
+            }
             return true;
         } else if (Objects.equals(str, "a")) {
-            player.getTank().getMp().setDirection(MoveDirections.LEFT);
+            if (!checkLayering(player.getTank(), -1, 0)) {
+                player.getTank().getMp().setDirection(MoveDirections.LEFT);
+                player.getTank().move();
+            }
             return true;
         } else if (Objects.equals(str, "d")) {
-            player.getTank().getMp().setDirection(MoveDirections.RIGHT);
+            if (!checkLayering(player.getTank(), 1, 0)) {
+                player.getTank().getMp().setDirection(MoveDirections.RIGHT);
+                player.getTank().move();
+            }
             return true;
         }
+
+        if (Objects.equals(str, "f")) {
+            isFire = true;
+            if (player.getTank().getMp().getDirection() == MoveDirections.LEFT) {
+                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x() - 1, player.getTank().getPosition().y()), new MoveParameters(1)));
+                player.getBullets().get(0).getMp().setDirection(MoveDirections.LEFT);
+            } else if (player.getTank().getMp().getDirection() == MoveDirections.RIGHT) {
+                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x() + 1, player.getTank().getPosition().y()), new MoveParameters(1)));
+                player.getBullets().get(0).getMp().setDirection(MoveDirections.RIGHT);
+            } else if (player.getTank().getMp().getDirection() == MoveDirections.UP) {
+                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x(), player.getTank().getPosition().y() - 1), new MoveParameters(1)));
+                player.getBullets().get(0).getMp().setDirection(MoveDirections.UP);
+            } else if (player.getTank().getMp().getDirection() == MoveDirections.DOWN) {
+                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x(), player.getTank().getPosition().y() + 1), new MoveParameters(1)));
+                player.getBullets().get(0).getMp().setDirection(MoveDirections.DOWN);
+            }
+            return true;
+        }
+
         return !Objects.equals(str, "q");
     }
 
-    /*private boolean isReadyToFire() {
-        String str = sc.nextLine();
-        if (Objects.equals(str, "fire")) {
-            player.getBullets().get(0).getMp().setDirection(player.getTank().getMp().getDirection());
-            if(player.getTank().getMp().getDirection() == MoveDirections.LEFT){
-                player.getBullets().add(0,new Bullet(new Position(player.getTank().getPosition().x() - 2,player.getTank().getPosition().y()),new MoveParameters(1)));
+    public boolean intersects(Position position1, Position position2) {
+        return position1.x() == position2.x() && position1.y() == position2.y();
+    }
+
+    public boolean checkLayering(Tank tank, int changeX, int changeY) {
+        for (UndestroyableWall undestroyableWall : indestrictibleWall) {
+            if (intersects(undestroyableWall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+                return true;
             }
-            else if(player.getTank().getMp().getDirection() == MoveDirections.RIGHT){
-                player.getBullets().add(0,new Bullet(new Position(player.getTank().getPosition().x() + 2,player.getTank().getPosition().y()),new MoveParameters(1)));
-            }
-            else if(player.getTank().getMp().getDirection() == MoveDirections.UP){
-                player.getBullets().add(0,new Bullet(new Position(player.getTank().getPosition().x(),player.getTank().getPosition().y() - 2),new MoveParameters(1)));
-            }
-            else if(player.getTank().getMp().getDirection() == MoveDirections.DOWN){
-                player.getBullets().add(0,new Bullet(new Position(player.getTank().getPosition().x(),player.getTank().getPosition().y() + 2),new MoveParameters(1)));
-            }
-            System.out.println(player.getBullets().get(0).getPosition());
-            return true;
         }
-        return !Objects.equals(str, "q");
-    }*/
+
+        for (Wall wall : walls) {
+            if (intersects(wall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void isBulletReachedObject() {
+        checkDestroy(player.getBullets());
+    }
+
+    private void checkDestroy(List<Bullet> bullets) {
+        for (int i = 0; i < bullets.size(); i++) {
+            for (int j = 0; j < walls.size(); j++) {
+                if (walls.get(j).destroy(walls.get(j).getPosition(), bullets.get(i))) {
+                    field[walls.get(i).getPosition().y()][walls.get(i).getPosition().x()] = 'x';
+                    walls.remove(j);
+                    bullets.remove(i);
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < bullets.size(); i++) {
+            for (UndestroyableWall undestroyableWall : indestrictibleWall) {
+                if (bullets.get(i).destroy(undestroyableWall.getPosition(), bullets.get(i))) {
+                    bullets.remove(i);
+                    break;
+                }
+            }
+        }
+    }
 
     public void initializeGame() {
         for (int i = 0; i < field.length; i++) {
@@ -60,71 +120,84 @@ public class MainBattleField {
             }
         }
 
+        UndestroyableWall wall;
+        for (int i = 0; i < field[0].length; i++) {
+            wall = new UndestroyableWall(new Position(0, i));
+            indestrictibleWall.add(wall);
+        }
+
+        for (int i = 0; i < field[0].length; i++) {
+            wall = new UndestroyableWall(new Position(field.length - 1, i));
+            indestrictibleWall.add(wall);
+        }
+
+        for (int i = 0; i < field.length; i++) {
+            wall = new UndestroyableWall(new Position(i, 0));
+            indestrictibleWall.add(wall);
+        }
+
+        for (int i = 0; i < field.length; i++) {
+            wall = new UndestroyableWall(new Position(i, field[0].length - 1));
+            indestrictibleWall.add(wall);
+        }
+
+        for (UndestroyableWall undestroyableWall : indestrictibleWall) {
+            field[undestroyableWall.getPosition().y()][undestroyableWall.getPosition().x()] = 'D';
+        }
+
+        Wall wall1 = new Wall(new Position(4, 4));
+        walls.add(wall1);
+
+        for (Wall currentWall : walls) {
+            field[currentWall.getPosition().y()][currentWall.getPosition().x()] = 'W';
+        }
+
         Tank tank = new Tank(new Position(5, 5), new MoveParameters(1));
-        tank.setConditionIndex(4);
+        tank.setConditionIndex(3);
         tank.getMp().setDirection(MoveDirections.UP);
         player.setTank(tank);
         player.setBullets(bullets);
         player.setCondition(true);
 
         field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '0';
-        field[player.getTank().getPosition().y() - 1][player.getTank().getPosition().x()] = '|';
-
-        /*Bullet bullet1 = new Bullet(new Position(player.getTank().getPosition().x(), player.getTank().getPosition().y()), new MoveParameters(1));
-        bullets.add(bullet1);*/
 
         printField();
         while (true) {
             oldPosition = player.getTank().getPosition();
-            oldDirection = player.getTank().getMp().getDirection();
-            if (!inputKey()) {
-                return;
+            if (inputKey()) {
+                if (isFire) {
+                    while (true) {
+                        if (player.getBullets().size() != 0) {
+                            isBulletReachedObject();
+                            for (int i = 0; i < player.getBullets().size(); i++) {
+                                player.getBullets().get(i).move();
+                            }
+                            isBulletReachedObject();
+                        } else {
+                            break;
+                        }
+                    }
+                    isFire = false;
+                }
+            } else {
+                break;
             }
-            player.getTank().move();
             updateField();
         }
+        printField();
     }
 
     private void updateField() {
 
-        if(oldDirection == MoveDirections.LEFT){
-            field[oldPosition.y()][oldPosition.x() - 1] = 'x';
-        }
-        if(oldDirection == MoveDirections.RIGHT){
-            field[oldPosition.y()][oldPosition.x() + 1] = 'x';
-        }
-        if(oldDirection == MoveDirections.UP){
-            field[oldPosition.y() - 1][oldPosition.x()] = 'x';
-        }
-        if(oldDirection == MoveDirections.DOWN){
-            field[oldPosition.y() + 1][oldPosition.x()] = 'x';
-        }
         field[oldPosition.y()][oldPosition.x()] = 'x';
 
         field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = 'O';
-        if (player.getTank().getMp().getDirection() == MoveDirections.UP) {
-            field[player.getTank().getPosition().y() - 1][player.getTank().getPosition().x()] = '|';
-            //player.getBullets().get(0).getMp().setDirection(MoveDirections.UP);
-        } else if (player.getTank().getMp().getDirection() == MoveDirections.DOWN) {
-            field[player.getTank().getPosition().y() + 1][player.getTank().getPosition().x()] = '|';
-            //player.getBullets().get(0).getMp().setDirection(MoveDirections.DOWN);
-        } else if (player.getTank().getMp().getDirection() == MoveDirections.LEFT) {
-            field[player.getTank().getPosition().y()][player.getTank().getPosition().x() - 1] = '-';
-            //player.getBullets().get(0).getMp().setDirection(MoveDirections.LEFT);
-        } else if (player.getTank().getMp().getDirection() == MoveDirections.RIGHT) {
-            field[player.getTank().getPosition().y()][player.getTank().getPosition().x() + 1] = '-';
-            //player.getBullets().get(0).getMp().setDirection(MoveDirections.RIGHT);
-        } else {
-            System.out.println("something go wrong");
+
+        for (Wall wall : walls) {
+            field[wall.getPosition().y()][wall.getPosition().y()] = 'W';
         }
 
-        /*if (isReadyToFire()) {
-
-            printField();
-        }*/
-
         oldPosition = null;
-        oldDirection = MoveDirections.NONE;
 
         printField();
     }
