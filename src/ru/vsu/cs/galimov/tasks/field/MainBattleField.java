@@ -3,7 +3,6 @@ package ru.vsu.cs.galimov.tasks.field;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.UndestroyableWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
 import java.util.*;
@@ -146,7 +145,13 @@ public class MainBattleField {
         }
 
         Wall wall1 = new Wall(new Position(4, 4));
+        Wall wall2 = new Wall(new Position(4, 5));
+        Wall wall3 = new Wall(new Position(4, 6));
+        Wall wall4 = new Wall(new Position(4, 7));
         walls.add(wall1);
+        walls.add(wall2);
+        walls.add(wall3);
+        walls.add(wall4);
 
         for (Wall currentWall : walls) {
             field[currentWall.getPosition().y()][currentWall.getPosition().x()] = 'W';
@@ -194,7 +199,7 @@ public class MainBattleField {
         field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = 'O';
 
         for (Wall wall : walls) {
-            field[wall.getPosition().y()][wall.getPosition().y()] = 'W';
+            field[wall.getPosition().y()][wall.getPosition().x()] = 'W';
         }
 
         oldPosition = null;
