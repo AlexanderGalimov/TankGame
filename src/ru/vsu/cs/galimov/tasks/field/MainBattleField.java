@@ -94,7 +94,7 @@ public class MainBattleField {
         for (int i = 0; i < bullets.size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
                 if (walls.get(j).destroy(walls.get(j).getPosition(), bullets.get(i))) {
-                    field[walls.get(i).getPosition().y()][walls.get(i).getPosition().x()] = 'x';
+                    field[walls.get(j).getPosition().y()][walls.get(j).getPosition().x()] = 'x';
                     walls.remove(j);
                     bullets.remove(i);
                     break;
