@@ -1,5 +1,7 @@
 package ru.vsu.cs.galimov.tasks.draw;
 
+import ru.vsu.cs.galimov.tasks.model.movable.MoveDirections;
+import ru.vsu.cs.galimov.tasks.model.movable.MoveParameters;
 import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
 import javax.swing.*;
@@ -20,9 +22,9 @@ public class DrawUtils {
     private static final Image water = loadImage("Images/water.jpeg");
     private static final Image thickets = loadImage("Images/thickets.jpeg");
 
-    public static void drawTank(Graphics2D g2d, Position position, int conditionIndex) {
-        Position position1 = new Position(position.x() - 25, position.y() - 25);
-        draw(g2d, position1, conditionIndex, tankLeft, tankRight, tankUp, tankDown);
+    public static void drawTank(Graphics2D g2d, Position position, MoveDirections direction) {
+        Position newPosition = new Position(position.x() - 25, position.y() - 25);
+        draw(g2d, newPosition, direction, tankLeft, tankRight, tankUp, tankDown);
         g2d.setColor(Color.black);
         g2d.drawRect(position.x() - 25, position.y() - 25, 50, 50);
     }
@@ -43,29 +45,29 @@ public class DrawUtils {
         g2d.drawImage(thickets, position.x() - 25, position.y() - 25, null);
     }
 
-    public static void drawBullet(Graphics2D g2d, Position position, int conditionIndex) {
-        Position position1;
-        if (conditionIndex == 1 || conditionIndex == 2) {
-            position1 = new Position(position.x() - 25, position.y() - 8);
-            draw(g2d, position1, conditionIndex, bulletLeft, bulletRight, bulletUp, bulletDown);
+    public static void drawBullet(Graphics2D g2d, Position position, MoveDirections directions) {
+        Position newPosition;
+        if (directions == MoveDirections.LEFT || directions == MoveDirections.RIGHT) {
+            newPosition = new Position(position.x() - 25, position.y() - 8);
+            draw(g2d, newPosition, directions, bulletLeft, bulletRight, bulletUp, bulletDown);
         }
-        if (conditionIndex == 3 || conditionIndex == 4) {
-            position1 = new Position(position.x() - 8, position.y() - 25);
-            draw(g2d, position1, conditionIndex, bulletLeft, bulletRight, bulletUp, bulletDown);
+        if (directions == MoveDirections.UP || directions == MoveDirections.DOWN) {
+            newPosition = new Position(position.x() - 8, position.y() - 25);
+            draw(g2d, newPosition, directions, bulletLeft, bulletRight, bulletUp, bulletDown);
         }
     }
 
-    private static void draw(Graphics2D g2d, Position position, int conditionIndex, Image left, Image right, Image up, Image down) {
-        if (conditionIndex == 1) {
+    private static void draw(Graphics2D g2d, Position position, MoveDirections direction, Image left, Image right, Image up, Image down) {
+        if (direction == MoveDirections.LEFT) {
             g2d.drawImage(left, position.x(), position.y(), null);
         }
-        if (conditionIndex == 2) {
+        if (direction == MoveDirections.RIGHT) {
             g2d.drawImage(right, position.x(), position.y(), null);
         }
-        if (conditionIndex == 3) {
+        if (direction == MoveDirections.UP) {
             g2d.drawImage(up, position.x(), position.y(), null);
         }
-        if (conditionIndex == 4) {
+        if (direction == MoveDirections.DOWN) {
             g2d.drawImage(down, position.x(), position.y(), null);
         }
     }

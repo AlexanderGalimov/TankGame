@@ -58,7 +58,6 @@ public class DrawPanel extends JPanel {
                 if (player1.isCondition()) {
                     if (!layering(player1.getTank(), -50, 0) && !tankLayering(player1.getTank(),player2.getTank(), -50, 0)) {
                         player1.getTank().getMp().setDirection(MoveDirections.LEFT);
-                        player1.getTank().setConditionIndex(1);
                         player1.getTank().move();
                         update();
                     }
@@ -75,7 +74,6 @@ public class DrawPanel extends JPanel {
                 if (player1.isCondition()) {
                     if (!layering(player1.getTank(), 50, 0) && !tankLayering(player1.getTank(),player2.getTank(), 50, 0)) {
                         player1.getTank().getMp().setDirection(MoveDirections.RIGHT);
-                        player1.getTank().setConditionIndex(2);
                         player1.getTank().move();
                         update();
                     }
@@ -92,7 +90,6 @@ public class DrawPanel extends JPanel {
                 if (player1.isCondition()) {
                     if (!layering(player1.getTank(), 0, -50)&& !tankLayering(player1.getTank(),player2.getTank(), 0, -50)) {
                         player1.getTank().getMp().setDirection(MoveDirections.UP);
-                        player1.getTank().setConditionIndex(3);
                         player1.getTank().move();
                         update();
                     }
@@ -108,7 +105,6 @@ public class DrawPanel extends JPanel {
                 if (player1.isCondition()) {
                     if (!layering(player1.getTank(), 0, 50)&& !tankLayering(player1.getTank(),player2.getTank(),0, 50)) {
                         player1.getTank().getMp().setDirection(MoveDirections.DOWN);
-                        player1.getTank().setConditionIndex(4);
                         player1.getTank().move();
                         update();
                     }
@@ -125,7 +121,6 @@ public class DrawPanel extends JPanel {
                 if (player2.isCondition()) {
                     if (!layering(player2.getTank(), -50, 0) && !tankLayering(player2.getTank(),player1.getTank(), -50, 0)) {
                         player2.getTank().getMp().setDirection(MoveDirections.LEFT);
-                        player2.getTank().setConditionIndex(1);
                         player2.getTank().move();
                         update();
                     }
@@ -141,7 +136,6 @@ public class DrawPanel extends JPanel {
                 if (player2.isCondition()) {
                     if (!layering(player2.getTank(), 50, 0) && !tankLayering(player2.getTank(),player1.getTank(), 50, 0)) {
                         player2.getTank().getMp().setDirection(MoveDirections.RIGHT);
-                        player2.getTank().setConditionIndex(2);
                         player2.getTank().move();
                         update();
                     }
@@ -158,7 +152,6 @@ public class DrawPanel extends JPanel {
                 if (player2.isCondition()) {
                     if (!layering(player2.getTank(), 0, -50) && !tankLayering(player2.getTank(),player1.getTank(), 0, -50)) {
                         player2.getTank().getMp().setDirection(MoveDirections.UP);
-                        player2.getTank().setConditionIndex(3);
                         player2.getTank().move();
                         update();
                     }
@@ -175,7 +168,6 @@ public class DrawPanel extends JPanel {
                 if (player2.isCondition()) {
                     if (!layering(player2.getTank(), 0, 50) && !tankLayering(player2.getTank(),player1.getTank(), 0, 50)) {
                         player2.getTank().getMp().setDirection(MoveDirections.DOWN);
-                        player2.getTank().setConditionIndex(4);
                         player2.getTank().move();
                         update();
                     }
@@ -193,7 +185,6 @@ public class DrawPanel extends JPanel {
                 if (player1.isCondition()) {
                     bullet = Initialization.initBullet(player1.getTank());
                     bullet.getMp().setDirection(player1.getTank().getMp().getDirection());
-                    bullet.setConditionIndex(player1.getTank().getConditionIndex());
                     bullets1.add(bullet);
                     if (!timer.isRunning()) {
                         timer.start();
@@ -212,7 +203,6 @@ public class DrawPanel extends JPanel {
                 if (player2.isCondition()) {
                     bullet = Initialization.initBullet(player2.getTank());
                     bullet.getMp().setDirection(player2.getTank().getMp().getDirection());
-                    bullet.setConditionIndex(player2.getTank().getConditionIndex());
                     bullets2.add(bullet);
                     if (!timer.isRunning()) {
                         timer.start();

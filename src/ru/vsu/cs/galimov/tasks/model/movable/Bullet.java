@@ -7,7 +7,6 @@ import ru.vsu.cs.galimov.tasks.model.Destroyable;
 import java.awt.*;
 
 public class Bullet extends MovableObject implements Destroyable, Drawable {
-    private int conditionIndex = 1;
 
     public Bullet(Position position, MoveParameters mp) {
         super(position, mp);
@@ -20,14 +19,6 @@ public class Bullet extends MovableObject implements Destroyable, Drawable {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        DrawUtils.drawBullet(graphics2D,getPosition(),conditionIndex);
-    }
-
-    public int getConditionIndex() {
-        return conditionIndex;
-    }
-
-    public void setConditionIndex(int conditionIndex) {
-        this.conditionIndex = conditionIndex;
+        DrawUtils.drawBullet(graphics2D,getPosition(),getMp().getDirection());
     }
 }
