@@ -17,5 +17,7 @@ public abstract class BattleFieldObject{
         this.position = position;
     }
 
-
+    public boolean intersects(Position p){
+        return this.position.x() == p.x() && this.position.y() == p.y();
+    }
 }

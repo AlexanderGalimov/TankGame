@@ -1,8 +1,9 @@
 package ru.vsu.cs.galimov.tasks.field;
 
 import ru.vsu.cs.galimov.tasks.model.movable.*;
-import ru.vsu.cs.galimov.tasks.model.staticObject.UndestroyableWall;
+import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
+import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
 import java.util.*;
@@ -13,83 +14,85 @@ public class MainBattleField {
     private Position oldPosition = new Position(0, 0);
     private final List<Bullet> bullets = new ArrayList<>();
     private final Scanner sc = new Scanner(System.in);
-    private final List<UndestroyableWall> indestructibleWall = new ArrayList<>();
+    private final List<IndestructibleWall> indestructibleWall = new ArrayList<>();
     private final List<Wall> walls = new ArrayList<>();
-    private boolean isFire = false;
+    private final List<Water> lakes = new ArrayList<>();
 
     private boolean inputKey() {
         String str = sc.next();
         if (Objects.equals(str, "w")) {
-            if (!checkLayering(player.getTank(), 0, -1)) {
-                player.getTank().getMp().setDirection(MoveDirections.UP);
-                player.getTank().move();
-            }
+            checkLayeringAndMovementForPlayers(player,MoveDirections.UP,0,-1);
             return true;
         } else if (Objects.equals(str, "s")) {
-            if (!checkLayering(player.getTank(), 0, 1)) {
-                player.getTank().getMp().setDirection(MoveDirections.DOWN);
-                player.getTank().move();
-            }
+            checkLayeringAndMovementForPlayers(player,MoveDirections.DOWN,0,1);
             return true;
         } else if (Objects.equals(str, "a")) {
-            if (!checkLayering(player.getTank(), -1, 0)) {
-                player.getTank().getMp().setDirection(MoveDirections.LEFT);
-                player.getTank().move();
-            }
+            checkLayeringAndMovementForPlayers(player,MoveDirections.LEFT,-1,0);
             return true;
         } else if (Objects.equals(str, "d")) {
-            if (!checkLayering(player.getTank(), 1, 0)) {
-                player.getTank().getMp().setDirection(MoveDirections.RIGHT);
-                player.getTank().move();
-            }
+            checkLayeringAndMovementForPlayers(player,MoveDirections.RIGHT,1,0);
             return true;
         }
 
         if (Objects.equals(str, "f")) {
-            isFire = true;
+            player.getTank().setFire(true);
             if (player.getTank().getMp().getDirection() == MoveDirections.LEFT) {
-                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x() - 1, player.getTank().getPosition().y()), new MoveParameters(1)));
-                player.getBullets().get(0).getMp().setDirection(MoveDirections.LEFT);
+                setBulletParams(player, MoveDirections.LEFT, -1, 0);
             } else if (player.getTank().getMp().getDirection() == MoveDirections.RIGHT) {
-                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x() + 1, player.getTank().getPosition().y()), new MoveParameters(1)));
-                player.getBullets().get(0).getMp().setDirection(MoveDirections.RIGHT);
+                setBulletParams(player, MoveDirections.RIGHT, 1, 0);
             } else if (player.getTank().getMp().getDirection() == MoveDirections.UP) {
-                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x(), player.getTank().getPosition().y() - 1), new MoveParameters(1)));
-                player.getBullets().get(0).getMp().setDirection(MoveDirections.UP);
+                setBulletParams(player, MoveDirections.UP, 0, -1);
             } else if (player.getTank().getMp().getDirection() == MoveDirections.DOWN) {
-                player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x(), player.getTank().getPosition().y() + 1), new MoveParameters(1)));
-                player.getBullets().get(0).getMp().setDirection(MoveDirections.DOWN);
+                setBulletParams(player, MoveDirections.DOWN, 0, 1);
             }
             return true;
         }
-
         return !Objects.equals(str, "q");
     }
 
-    public boolean intersects(Position position1, Position position2) {
-        return position1.x() == position2.x() && position1.y() == position2.y();
+    // TODO same
+    private void setBulletParams(Player player, MoveDirections direction, int changeX, int changeY) {
+        player.getBullets().add(new Bullet(new Position(player.getTank().getPosition().x() + changeX, player.getTank().getPosition().y() + changeY), new MoveParameters(1)));
+        player.getBullets().get(0).getMp().setDirection(direction);
     }
 
-    public boolean checkLayering(Tank tank, int changeX, int changeY) {
-        for (UndestroyableWall undestroyableWall : indestructibleWall) {
-            if (intersects(undestroyableWall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
+    // TODO same
+    private void checkLayeringAndMovementForPlayers(Player player, MoveDirections direction, int changeX, int changeY) {
+        if (layering(player.getTank(), changeX, changeY)) {
+            player.getTank().getMp().setDirection(direction);
+            player.getTank().move();
+        }
+    }
+
+    //Todo same
+    private boolean layering(Tank tank, int changeX, int changeY) {
+        for (IndestructibleWall indestructibleWall : indestructibleWall) {
+            if (indestructibleWall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+                return false;
             }
         }
 
         for (Wall wall : walls) {
-            if (intersects(wall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
+            if (wall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+                return false;
             }
         }
 
-        return false;
+        for (Water lake : lakes) {
+            if (lake.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
+    // TODO same
     private void isBulletReachedObject() {
         checkDestroy(player.getBullets());
     }
 
+    // TODO same
     private void checkDestroy(List<Bullet> bullets) {
         for (int i = 0; i < bullets.size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
@@ -103,8 +106,8 @@ public class MainBattleField {
         }
 
         for (int i = 0; i < bullets.size(); i++) {
-            for (UndestroyableWall undestroyableWall : indestructibleWall) {
-                if (bullets.get(i).destroy(undestroyableWall.getPosition(), bullets.get(i))) {
+            for (IndestructibleWall indestructibleWall : indestructibleWall) {
+                if (bullets.get(i).destroy(indestructibleWall.getPosition(), bullets.get(i))) {
                     bullets.remove(i);
                     break;
                 }
@@ -119,29 +122,29 @@ public class MainBattleField {
             }
         }
 
-        UndestroyableWall wall;
+        IndestructibleWall wall;
         for (int i = 0; i < field[0].length; i++) {
-            wall = new UndestroyableWall(new Position(0, i));
+            wall = new IndestructibleWall(new Position(0, i));
             indestructibleWall.add(wall);
         }
 
         for (int i = 0; i < field[0].length; i++) {
-            wall = new UndestroyableWall(new Position(field.length - 1, i));
+            wall = new IndestructibleWall(new Position(field.length - 1, i));
             indestructibleWall.add(wall);
         }
 
         for (int i = 0; i < field.length; i++) {
-            wall = new UndestroyableWall(new Position(i, 0));
+            wall = new IndestructibleWall(new Position(i, 0));
             indestructibleWall.add(wall);
         }
 
         for (int i = 0; i < field.length; i++) {
-            wall = new UndestroyableWall(new Position(i, field[0].length - 1));
+            wall = new IndestructibleWall(new Position(i, field[0].length - 1));
             indestructibleWall.add(wall);
         }
 
-        for (UndestroyableWall undestroyableWall : indestructibleWall) {
-            field[undestroyableWall.getPosition().y()][undestroyableWall.getPosition().x()] = 'D';
+        for (IndestructibleWall indestructibleWall : indestructibleWall) {
+            field[indestructibleWall.getPosition().y()][indestructibleWall.getPosition().x()] = 'D';
         }
 
         Wall wall1 = new Wall(new Position(4, 4));
@@ -158,19 +161,26 @@ public class MainBattleField {
         }
 
         Tank tank = new Tank(new Position(5, 5), new MoveParameters(1));
-        tank.setConditionIndex(3);
         tank.getMp().setDirection(MoveDirections.UP);
         player.setTank(tank);
         player.setBullets(bullets);
         player.setCondition(true);
 
-        field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '0';
+        field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '^';
 
         printField();
+
+        inputActions(player.getTank());
+
+        printField();
+    }
+
+    // TODO
+    private void inputActions(Tank tank) {
         while (true) {
             oldPosition = player.getTank().getPosition();
             if (inputKey()) {
-                if (isFire) {
+                if (tank.isFire()) {
                     while (true) {
                         if (player.getBullets().size() != 0) {
                             isBulletReachedObject();
@@ -182,21 +192,29 @@ public class MainBattleField {
                             break;
                         }
                     }
-                    isFire = false;
+                    tank.setFire(false);
                 }
             } else {
                 break;
             }
             updateField();
         }
-        printField();
     }
+
 
     private void updateField() {
 
         field[oldPosition.y()][oldPosition.x()] = 'x';
 
-        field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = 'O';
+        if (player.getTank().getMp().getDirection() == MoveDirections.LEFT) {
+            field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '<';
+        } else if (player.getTank().getMp().getDirection() == MoveDirections.RIGHT) {
+            field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '>';
+        } else if (player.getTank().getMp().getDirection() == MoveDirections.UP) {
+            field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '^';
+        } else if (player.getTank().getMp().getDirection() == MoveDirections.DOWN) {
+            field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = 'v';
+        }
 
         for (Wall wall : walls) {
             field[wall.getPosition().y()][wall.getPosition().x()] = 'W';

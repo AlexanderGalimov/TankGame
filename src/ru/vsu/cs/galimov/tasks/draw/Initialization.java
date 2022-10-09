@@ -2,25 +2,36 @@ package ru.vsu.cs.galimov.tasks.draw;
 
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Thickets;
-import ru.vsu.cs.galimov.tasks.model.staticObject.UndestroyableWall;
+import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
+import ru.vsu.cs.galimov.tasks.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Initialization {
-    public static List<Tank> initTanks() {
+    public static List<Tank> initTanks(List<Position> positionList) {
         List<Tank> lt = new ArrayList<>();
-        Tank tank1 = new Tank(new Position(75, 125), new MoveParameters(50));
-        tank1.setConditionIndex(2);
-        Tank tank2 = new Tank(new Position(1225, 625), new MoveParameters(50));
-        tank2.setConditionIndex(1);
-        tank1.getMp().setDirection(MoveDirections.RIGHT);
-        tank2.getMp().setDirection(MoveDirections.LEFT);
-        lt.add(tank1);
-        lt.add(tank2);
+        Tank tank;
+        for (Position position : positionList) {
+            tank = new Tank(position, new MoveParameters(50));
+            tank.getMp().setDirection(MoveDirections.UP);
+            lt.add(tank);
+        }
         return lt;
+    }
+
+    public static List<Player> initPlayers(List<Tank> tanks, List<List<Bullet>> bullets){
+        Player player;
+        List<Player> players = new ArrayList<>();
+        System.out.println(bullets.size());
+        System.out.println(tanks.size());
+        for (int i = 0; i < tanks.size(); i++) {
+            player = new Player(tanks.get(i), bullets.get(i),true);
+            players.add(player);
+        }
+        return players;
     }
 
     public static Bullet initBullet(Tank tank) {
@@ -35,13 +46,13 @@ public class Initialization {
         int x = 75;
         int y = 175;
         for (int i = 0; i < 4; i++) {
-            wall = new Wall(new Position(x + 50 * i,y));
+            wall = new Wall(new Position(x + 50 * i, y));
             walls.add(wall);
         }
         x = 1075;
         y = 575;
         for (int i = 0; i < 4; i++) {
-            wall = new Wall(new Position(x + 50 * i,y));
+            wall = new Wall(new Position(x + 50 * i, y));
             walls.add(wall);
         }
 
@@ -77,7 +88,7 @@ public class Initialization {
         }
     }
 
-    public static List<Thickets> initThickets(){
+    public static List<Thickets> initThickets() {
         List<Thickets> thickets = new ArrayList<>();
         Thickets thicket;
 
@@ -115,7 +126,7 @@ public class Initialization {
         }
     }
 
-    public static List<Water> initWater(){
+    public static List<Water> initWater() {
         List<Water> lakes = new ArrayList<>();
         Water lake;
         int x = 425;
@@ -129,40 +140,40 @@ public class Initialization {
         return lakes;
     }
 
-    public static List<UndestroyableWall> initUndestroyableWalls() {
-        List<UndestroyableWall> walls = new ArrayList<>();
-        UndestroyableWall wall;
+    public static List<IndestructibleWall> initIndestructibleWalls() {
+        List<IndestructibleWall> walls = new ArrayList<>();
+        IndestructibleWall wall;
         int x = 25;
 
         for (int i = 0; i < 26; i++) {
-            wall = new UndestroyableWall(new Position(x + 50 * i, 25));
+            wall = new IndestructibleWall(new Position(x + 50 * i, 25));
             walls.add(wall);
         }
 
         int y = 75;
         for (int i = 0; i < 13; i++) {
-            wall = new UndestroyableWall(new Position(25, y + 50 * i));
+            wall = new IndestructibleWall(new Position(25, y + 50 * i));
             walls.add(wall);
         }
         for (int i = 0; i < 13; i++) {
-            wall = new UndestroyableWall(new Position(1275, y + 50 * i));
+            wall = new IndestructibleWall(new Position(1275, y + 50 * i));
             walls.add(wall);
         }
         for (int i = 0; i < 26; i++) {
-            wall = new UndestroyableWall(new Position(x + 50 * i, 725));
+            wall = new IndestructibleWall(new Position(x + 50 * i, 725));
             walls.add(wall);
         }
 
         x = 125;
         y = 325;
         for (int i = 0; i < 3; i++) {
-            wall = new UndestroyableWall(new Position(x, y + i * 50));
+            wall = new IndestructibleWall(new Position(x, y + i * 50));
             walls.add(wall);
         }
 
         x = 1175;
         for (int i = 0; i < 3; i++) {
-            wall = new UndestroyableWall(new Position(x, y + i * 50));
+            wall = new IndestructibleWall(new Position(x, y + i * 50));
             walls.add(wall);
         }
         return walls;

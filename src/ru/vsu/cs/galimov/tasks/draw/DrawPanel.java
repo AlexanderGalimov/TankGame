@@ -2,7 +2,7 @@ package ru.vsu.cs.galimov.tasks.draw;
 
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Thickets;
-import ru.vsu.cs.galimov.tasks.model.staticObject.UndestroyableWall;
+import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
 import ru.vsu.cs.galimov.tasks.player.Player;
@@ -15,13 +15,12 @@ import java.util.List;
 
 public class DrawPanel extends JPanel {
     private final Timer timer;
-    private Player player1;
-    private Player player2;
-    private final List<Bullet> bullets1 = new ArrayList<>();
-    private final List<Bullet> bullets2 = new ArrayList<>();
+    private final List<Position> tankStartPositions = new ArrayList<>();
+    private List<List<Bullet>> playersBullets = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     private Bullet bullet;
     private List<Wall> walls = new ArrayList<>();
-    private List<UndestroyableWall> undestroyableWalls = new ArrayList<>();
+    private List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
     private List<Water> lakes = new ArrayList<>();
     private List<Thickets> thickets = new ArrayList<>();
 
@@ -32,160 +31,126 @@ public class DrawPanel extends JPanel {
         timer = new Timer(125, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (Bullet value : bullets1) {
-                    value.move();
-                    update();
-                }
-                for (Bullet value : bullets2) {
-                    value.move();
-                    update();
-                }
-            }
-        });
-
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-        });
-
-        this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), LEFTP1);
-        Action leftFp = new AbstractAction(LEFTP1) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), -50, 0) && !tankLayering(player1.getTank(),player2.getTank(), -50, 0)) {
-                        player1.getTank().getMp().setDirection(MoveDirections.LEFT);
-                        player1.getTank().move();
+                for (Player player : players) {
+                    for (int j = 0; j < player.getBullets().size(); j++) {
+                        player.getBullets().get(j).move();
                         update();
                     }
                 }
             }
-        };
-        this.getActionMap().put(LEFTP1, leftFp);
+        });
 
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), RIGHTP1);
-        Action rightFp = new AbstractAction(RIGHTP1) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), LEFT_P1);
+        Action leftFp = new AbstractAction(LEFT_P1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), 50, 0) && !tankLayering(player1.getTank(),player2.getTank(), 50, 0)) {
-                        player1.getTank().getMp().setDirection(MoveDirections.RIGHT);
-                        player1.getTank().move();
-                        update();
-                    }
+                if (players.get(0).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.LEFT, -50, 0, 0);
                 }
+                update();
             }
         };
-        this.getActionMap().put(RIGHTP1, rightFp);
+
+        this.getActionMap().put(LEFT_P1, leftFp);
+
+        this.getInputMap().put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), RIGHT_P1);
+        Action rightFp = new AbstractAction(RIGHT_P1) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (players.get(0).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.RIGHT, 50, 0, 0);
+                }
+                update();
+            }
+        };
+        this.getActionMap().put(RIGHT_P1, rightFp);
 
         this.getInputMap().put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), UPP1);
         Action upFp = new AbstractAction(UPP1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), 0, -50)&& !tankLayering(player1.getTank(),player2.getTank(), 0, -50)) {
-                        player1.getTank().getMp().setDirection(MoveDirections.UP);
-                        player1.getTank().move();
-                        update();
-                    }
+                if (players.get(0).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.UP, 0, -50, 0);
                 }
+                update();
             }
         };
         this.getActionMap().put(UPP1, upFp);
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), DOWNP1);
-        Action downFp = new AbstractAction(DOWNP1) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), DOWN_P1);
+        Action downFp = new AbstractAction(DOWN_P1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player1.isCondition()) {
-                    if (!layering(player1.getTank(), 0, 50)&& !tankLayering(player1.getTank(),player2.getTank(),0, 50)) {
-                        player1.getTank().getMp().setDirection(MoveDirections.DOWN);
-                        player1.getTank().move();
-                        update();
-                    }
+                if (players.get(0).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.DOWN, 0, 50, 0);
                 }
+                update();
             }
         };
-        this.getActionMap().put(DOWNP1, downFp);
+        this.getActionMap().put(DOWN_P1, downFp);
 
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), LEFTP2);
-        Action leftSp = new AbstractAction(LEFTP2) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), LEFT_P2);
+        Action leftSp = new AbstractAction(LEFT_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), -50, 0) && !tankLayering(player2.getTank(),player1.getTank(), -50, 0)) {
-                        player2.getTank().getMp().setDirection(MoveDirections.LEFT);
-                        player2.getTank().move();
-                        update();
-                    }
+                if (players.get(1).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.LEFT, -50, 0, 1);
                 }
+                update();
             }
         };
-        this.getActionMap().put(LEFTP2, leftSp);
+        this.getActionMap().put(LEFT_P2, leftSp);
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), RIGHTP2);
-        Action rightSp = new AbstractAction(RIGHTP2) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), RIGHT_P2);
+        Action rightSp = new AbstractAction(RIGHT_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), 50, 0) && !tankLayering(player2.getTank(),player1.getTank(), 50, 0)) {
-                        player2.getTank().getMp().setDirection(MoveDirections.RIGHT);
-                        player2.getTank().move();
-                        update();
-                    }
+                if (players.get(1).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.RIGHT, 50, 0, 1);
                 }
+                update();
             }
         };
-        this.getActionMap().put(RIGHTP2, rightSp);
+        this.getActionMap().put(RIGHT_P2, rightSp);
 
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), UPP2);
-        Action upSp = new AbstractAction(UPP2) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), UP_P2);
+        Action upSp = new AbstractAction(UP_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), 0, -50) && !tankLayering(player2.getTank(),player1.getTank(), 0, -50)) {
-                        player2.getTank().getMp().setDirection(MoveDirections.UP);
-                        player2.getTank().move();
-                        update();
-                    }
+                if (players.get(1).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.UP, 0, -50, 1);
                 }
+                update();
             }
         };
-        this.getActionMap().put(UPP2, upSp);
+        this.getActionMap().put(UP_P2, upSp);
 
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWNP2);
-        Action downSp = new AbstractAction(DOWNP2) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_P2);
+        Action downSp = new AbstractAction(DOWN_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player2.isCondition()) {
-                    if (!layering(player2.getTank(), 0, 50) && !tankLayering(player2.getTank(),player1.getTank(), 0, 50)) {
-                        player2.getTank().getMp().setDirection(MoveDirections.DOWN);
-                        player2.getTank().move();
-                        update();
-                    }
+                if (players.get(1).isCondition()) {
+                    checkLayeringAndMovementForPlayers(players, MoveDirections.DOWN, 0, 50, 1);
                 }
+                update();
             }
         };
 
-        this.getActionMap().put(DOWNP2, downSp);
+        this.getActionMap().put(DOWN_P2, downSp);
 
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_F, 0), FIREP1);
-        Action fireFp = new AbstractAction(FIREP1) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_F, 0), FIRE_P1);
+        Action fireFp = new AbstractAction(FIRE_P1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player1.isCondition()) {
-                    bullet = Initialization.initBullet(player1.getTank());
-                    bullet.getMp().setDirection(player1.getTank().getMp().getDirection());
-                    bullets1.add(bullet);
+                if (players.get(0).isCondition()) {
+                    setBulletParams(players.get(0));
                     if (!timer.isRunning()) {
                         timer.start();
                     }
@@ -193,57 +158,72 @@ public class DrawPanel extends JPanel {
             }
         };
 
-        this.getActionMap().put(FIREP1, fireFp);
+        this.getActionMap().put(FIRE_P1, fireFp);
 
         this.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), FIREP2);
-        Action fireSp = new AbstractAction(FIREP2) {
+                KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), FIRE_P2);
+        Action fireSp = new AbstractAction(FIRE_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (player2.isCondition()) {
-                    bullet = Initialization.initBullet(player2.getTank());
-                    bullet.getMp().setDirection(player2.getTank().getMp().getDirection());
-                    bullets2.add(bullet);
+                if (players.get(1).isCondition()) {
+                    setBulletParams(players.get(1));
                     if (!timer.isRunning()) {
                         timer.start();
                     }
                 }
             }
         };
-        this.getActionMap().put(FIREP2, fireSp);
+        this.getActionMap().put(FIRE_P2, fireSp);
     }
 
+    // TODO same
+    private void setBulletParams(Player player) {
+        bullet = Initialization.initBullet(player.getTank());
+        bullet.getMp().setDirection(player.getTank().getMp().getDirection());
+        player.getBullets().add(bullet);
+    }
+
+    // // TODO same
+    private void checkLayeringAndMovementForPlayers(List<Player> players, MoveDirections direction, int changeX, int changeY, int numberOfPlayer) {
+        for (int j = 0; j < players.size(); j++) {
+            if (!layering(players.get(numberOfPlayer).getTank(), changeX, changeY) && !pairTankLayering(players.get(numberOfPlayer), players.get(j), changeX, changeY) && numberOfPlayer != j) {
+                players.get(numberOfPlayer).getTank().getMp().setDirection(direction);
+                players.get(numberOfPlayer).getTank().move();
+            }
+        }
+    }
+
+    // TODO same
     private void isBulletReachedObject() {
-        if(player1.isCondition()){
-            checkDestroy(bullets1);
+        for (Player player : players) {
+            if (player.isCondition()) {
+                checkDestroy(player.getBullets());
+            }
         }
-        if(player2.isCondition()){
-            checkDestroy(bullets2);
-        }
-        if(player1.isCondition() && player2.isCondition()){
-            checkDestroyForBullets();
+
+        for (int i = 0; i < players.size(); i++) {
+            for (int j = 0; j < players.size() && i != j; j++) {
+                checkDestroyForBullets(players.get(i), players.get(j));
+            }
         }
     }
 
-    private boolean checkIntersects(Position position1, Position position2) {
-        return position1.x() == position2.x() && position1.y() == position2.y();
-    }
-
+    // TODO same
     private boolean layering(Tank tank, int changeX, int changeY) {
         for (Wall wall : walls) {
-            if (checkIntersects(wall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+            if (wall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
                 return true;
             }
         }
 
-        for (UndestroyableWall undestroyableWall : undestroyableWalls) {
-            if (checkIntersects(undestroyableWall.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+        for (IndestructibleWall indestructibleWall : indestructibleWalls) {
+            if (indestructibleWall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
                 return true;
             }
         }
 
         for (Water lake : lakes) {
-            if (checkIntersects(lake.getPosition(), new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+            if (lake.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
                 return true;
             }
         }
@@ -251,15 +231,14 @@ public class DrawPanel extends JPanel {
         return false;
     }
 
-    public boolean tankLayering(Tank tank1, Tank tank2, int changeX, int changeY){
-        if(player1.isCondition() && player2.isCondition()){
-            if (checkIntersects(new Position(tank2.getPosition().x(), tank2.getPosition().y()), new Position(tank1.getPosition().x() + changeX, tank1.getPosition().y() + changeY))) {
-                return true;
-            }
+    private boolean pairTankLayering(Player player1, Player player2, int changeX, int changeY) {
+        if (player1.isCondition() && player2.isCondition()) {
+            return player2.getTank().intersects(new Position(player1.getTank().getPosition().x() + changeX, player1.getTank().getPosition().y() + changeY));
         }
         return false;
     }
 
+    // TODO same
     private void checkDestroy(List<Bullet> bullets) {
         for (int i = 0; i < bullets.size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
@@ -273,8 +252,8 @@ public class DrawPanel extends JPanel {
         }
 
         for (int i = 0; i < bullets.size(); i++) {
-            for (UndestroyableWall undestroyableWall : undestroyableWalls) {
-                if (bullets.get(i).destroy(undestroyableWall.getPosition(), bullets.get(i))) {
+            for (IndestructibleWall indestructibleWall : indestructibleWalls) {
+                if (bullets.get(i).destroy(indestructibleWall.getPosition(), bullets.get(i))) {
                     bullets.remove(i);
                     this.repaint();
                     break;
@@ -283,13 +262,15 @@ public class DrawPanel extends JPanel {
         }
 
         for (int i = 0; i < bullets.size(); i++) {
-            if (checkTankIntersection(bullets, i, player1)) break;
-            if (checkTankIntersection(bullets, i, player2)) break;
+            for (Player player : players) {
+                if (checkTankIntersection(bullets, i, player)) break;
+            }
         }
     }
 
+
     private boolean checkTankIntersection(List<Bullet> bullets, int i, Player player) {
-        if(player.isCondition()){
+        if (player.isCondition()) {
             if (player.getTank().destroy(player.getTank().getPosition(), bullets.get(i))) {
                 player.setCondition(false);
                 bullets.remove(i);
@@ -301,13 +282,16 @@ public class DrawPanel extends JPanel {
         return false;
     }
 
-    public void checkDestroyForBullets(){
+
+    public void checkDestroyForBullets(Player player1, Player player2) {
         for (int i = 0; i < player1.getBullets().size(); i++) {
             for (int j = 0; j < player2.getBullets().size(); j++) {
-                if(player1.isCondition()){
-                    if(player1.getBullets().get(i).destroy(player2.getBullets().get(j))
-                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() + 50, player2.getBullets().get(j).getPosition().y()),new MoveParameters(50)))
-                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() - 50, player2.getBullets().get(j).getPosition().y()),new MoveParameters(50)))){
+                if (player1.isCondition()) {
+                    if (player1.getBullets().get(i).destroy(player2.getBullets().get(j))
+                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() + 50, player2.getBullets().get(j).getPosition().y()), new MoveParameters(50)))
+                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() - 50, player2.getBullets().get(j).getPosition().y()), new MoveParameters(50)))
+                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x(), player2.getBullets().get(j).getPosition().y() + 50), new MoveParameters(50)))
+                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x(), player2.getBullets().get(j).getPosition().y() - 50), new MoveParameters(50)))) {
                         player1.getBullets().remove(i);
                         player2.getBullets().remove(j);
                         update();
@@ -325,12 +309,19 @@ public class DrawPanel extends JPanel {
     }
 
     private void initAllObjects() {
-        List<Tank> tankList = Initialization.initTanks();
-        player1 = new Player(tankList.get(0), bullets1, true);
-        player2 = new Player(tankList.get(1), bullets2, true);
+        tankStartPositions.add(new Position(75, 125));
+        tankStartPositions.add(new Position(1225, 625));
+        List<Tank> tankList = Initialization.initTanks(tankStartPositions);
+
+        playersBullets = new ArrayList<>();
+        for (int i = 0; i < tankList.size(); i++) {
+            playersBullets.add(new ArrayList<>());
+        }
+
+        players = Initialization.initPlayers(tankList, playersBullets);
 
         walls = Initialization.initWalls();
-        undestroyableWalls = Initialization.initUndestroyableWalls();
+        indestructibleWalls = Initialization.initIndestructibleWalls();
         lakes = Initialization.initWater();
         thickets = Initialization.initThickets();
     }
@@ -361,20 +352,18 @@ public class DrawPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         drawGrid(g2d);
 
-        if (player1.isCondition()) {
-            player1.getTank().draw(g2d);
-        }
-
-        if (player2.isCondition()) {
-            player2.getTank().draw(g2d);
+        for (Player player : players) {
+            if (player.isCondition()) {
+                player.getTank().draw(g2d);
+            }
         }
 
         for (Wall wall : walls) {
             wall.draw(g2d);
         }
 
-        for (UndestroyableWall undestroyableWall : undestroyableWalls) {
-            undestroyableWall.draw(g2d);
+        for (IndestructibleWall indestructibleWall : indestructibleWalls) {
+            indestructibleWall.draw(g2d);
         }
 
         for (Water lake : lakes) {
@@ -382,43 +371,56 @@ public class DrawPanel extends JPanel {
         }
 
         if (timer.isRunning()) {
-            for (Bullet item : bullets1) {
-                item.draw(g2d);
+            for (Player player : players) {
+                for (int j = 0; j < player.getBullets().size(); j++) {
+                    player.getBullets().get(j).draw(g2d);
+                }
             }
-            for (Bullet value : bullets2) {
-                value.draw(g2d);
+
+            for (List<Bullet> playersBullet : playersBullets) {
+                for (Bullet value : playersBullet) {
+                    value.draw(g2d);
+                }
             }
+
             isBulletReachedObject();
-            if (bullets1.size() == 0 && bullets2.size() == 0) {
+            boolean flag = false;
+            for (List<Bullet> playersBullet : playersBullets) {
+                if (playersBullet.size() != 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
                 timer.stop();
             }
         }
 
-        for (Thickets thicket: thickets){
+        for (Thickets thicket : thickets) {
             thicket.draw(g2d);
         }
 
     }
 
-    private static final String LEFTP1 = "Left1";
+    private static final String LEFT_P1 = "Left1";
 
-    private static final String RIGHTP1 = "Right1";
+    private static final String RIGHT_P1 = "Right1";
 
     private static final String UPP1 = "Up1";
 
-    private static final String DOWNP1 = "Down1";
+    private static final String DOWN_P1 = "Down1";
 
-    private static final String LEFTP2 = "Left2";
+    private static final String LEFT_P2 = "Left2";
 
-    private static final String RIGHTP2 = "Right2";
+    private static final String RIGHT_P2 = "Right2";
 
-    private static final String UPP2 = "Up2";
+    private static final String UP_P2 = "Up2";
 
-    private static final String DOWNP2 = "Down2";
+    private static final String DOWN_P2 = "Down2";
 
-    private static final String FIREP1 = "Fire1";
+    private static final String FIRE_P1 = "Fire1";
 
-    private static final String FIREP2 = "Fire2";
+    private static final String FIRE_P2 = "Fire2";
 
 
 }

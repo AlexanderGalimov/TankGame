@@ -34,5 +34,7 @@ public abstract class MovableObject extends BattleFieldObject implements Destroy
         this.mp = mp;
     }
 
-
+    public boolean intersects(Position p){
+        return this.position.x() == p.x() && this.position.y() == p.y();
+    }
 }

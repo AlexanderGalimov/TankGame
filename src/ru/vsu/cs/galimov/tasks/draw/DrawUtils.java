@@ -1,7 +1,6 @@
 package ru.vsu.cs.galimov.tasks.draw;
 
 import ru.vsu.cs.galimov.tasks.model.movable.MoveDirections;
-import ru.vsu.cs.galimov.tasks.model.movable.MoveParameters;
 import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
 import javax.swing.*;
@@ -18,7 +17,7 @@ public class DrawUtils {
     private static final Image bulletUp = loadImage("Images/bulletImages/bulletUp.jpeg");
     private static final Image bulletDown = loadImage("Images/bulletImages/bulletDown.png");
     private static final Image wall = loadImage("Images/wall.jpeg");
-    private static final Image undestroyableWall = loadImage("Images/undestroyableWall.jpeg");
+    private static final Image indestructibleWall = loadImage("Images/indestructibleWall.jpeg");
     private static final Image water = loadImage("Images/water.jpeg");
     private static final Image thickets = loadImage("Images/thickets.jpeg");
 
@@ -34,7 +33,7 @@ public class DrawUtils {
     }
 
     public static void drawUndestroyableWall(Graphics2D g2d, Position position) {
-        g2d.drawImage(undestroyableWall, position.x() - 25, position.y() - 25, null);
+        g2d.drawImage(indestructibleWall, position.x() - 25, position.y() - 25, null);
     }
 
     public static void drawWater(Graphics2D g2d, Position position) {

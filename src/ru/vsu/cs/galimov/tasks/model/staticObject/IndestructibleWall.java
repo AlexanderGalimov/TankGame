@@ -7,9 +7,9 @@ import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
 import java.awt.*;
 
-public class UndestroyableWall extends BattleFieldObject implements Drawable {
+public class IndestructibleWall extends BattleFieldObject implements Drawable {
 
-    public UndestroyableWall(Position position) {
+    public IndestructibleWall(Position position) {
         super(position);
     }
 

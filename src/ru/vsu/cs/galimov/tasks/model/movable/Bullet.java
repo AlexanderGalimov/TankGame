@@ -12,7 +12,6 @@ public class Bullet extends MovableObject implements Destroyable, Drawable {
         super(position, mp);
     }
 
-
     public boolean destroy(Bullet bullet) {
         return this.getPosition().x() == bullet.getPosition().x() && this.getPosition().y() == bullet.getPosition().y();
     }
