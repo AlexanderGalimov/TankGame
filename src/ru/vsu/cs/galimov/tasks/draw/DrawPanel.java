@@ -1,5 +1,7 @@
 package ru.vsu.cs.galimov.tasks.draw;
 
+import ru.vsu.cs.galimov.tasks.initialization.Initialization;
+import ru.vsu.cs.galimov.tasks.logic.LogicRealizationDp;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Thickets;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
@@ -15,14 +17,13 @@ import java.util.List;
 
 public class DrawPanel extends JPanel {
     private final Timer timer;
-    private final List<Position> tankStartPositions = new ArrayList<>();
-    private List<List<Bullet>> playersBullets = new ArrayList<>();
+    private final List<Tank> tanks = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
-    private Bullet bullet;
-    private List<Wall> walls = new ArrayList<>();
-    private List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
-    private List<Water> lakes = new ArrayList<>();
-    private List<Thickets> thickets = new ArrayList<>();
+    private final List<Wall> walls = new ArrayList<>();
+    private final List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
+    private final List<Water> lakes = new ArrayList<>();
+    private final List<Thickets> thickets = new ArrayList<>();
+    private final LogicRealizationDp logicRealizationDp = new LogicRealizationDp();
 
     public DrawPanel() {
 
@@ -32,8 +33,8 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (Player player : players) {
-                    for (int j = 0; j < player.getBullets().size(); j++) {
-                        player.getBullets().get(j).move();
+                    for (int i = 0; i < player.getTank().getBullets().size(); i++) {
+                        player.getTank().getBullets().get(i).move();
                         update();
                     }
                 }
@@ -46,7 +47,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(0).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.LEFT, -50, 0, 0);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 0);
                 }
                 update();
             }
@@ -60,7 +61,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(0).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.RIGHT, 50, 0, 0);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 0);
                 }
                 update();
             }
@@ -73,7 +74,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(0).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.UP, 0, -50, 0);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 0);
                 }
                 update();
             }
@@ -85,7 +86,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(0).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.DOWN, 0, 50, 0);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 0);
                 }
                 update();
             }
@@ -98,7 +99,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(1).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.LEFT, -50, 0, 1);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 1);
                 }
                 update();
             }
@@ -110,7 +111,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(1).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.RIGHT, 50, 0, 1);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 1);
                 }
                 update();
             }
@@ -123,7 +124,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(1).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.UP, 0, -50, 1);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 1);
                 }
                 update();
             }
@@ -136,7 +137,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(1).isCondition()) {
-                    checkLayeringAndMovementForPlayers(players, MoveDirections.DOWN, 0, 50, 1);
+                    logicRealizationDp.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 1);
                 }
                 update();
             }
@@ -150,7 +151,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(0).isCondition()) {
-                    setBulletParams(players.get(0));
+                    Initialization.setBulletParams(players.get(0).getTank(), 50);
                     if (!timer.isRunning()) {
                         timer.start();
                     }
@@ -166,7 +167,8 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(1).isCondition()) {
-                    setBulletParams(players.get(1));
+                    Initialization.setBulletParams(players.get(1).getTank(), 50);
+                    update();
                     if (!timer.isRunning()) {
                         timer.start();
                     }
@@ -176,154 +178,10 @@ public class DrawPanel extends JPanel {
         this.getActionMap().put(FIRE_P2, fireSp);
     }
 
-    // TODO same
-    private void setBulletParams(Player player) {
-        bullet = Initialization.initBullet(player.getTank());
-        bullet.getMp().setDirection(player.getTank().getMp().getDirection());
-        player.getBullets().add(bullet);
-    }
-
-    // // TODO same
-    private void checkLayeringAndMovementForPlayers(List<Player> players, MoveDirections direction, int changeX, int changeY, int numberOfPlayer) {
-        for (int j = 0; j < players.size(); j++) {
-            if (!layering(players.get(numberOfPlayer).getTank(), changeX, changeY) && !pairTankLayering(players.get(numberOfPlayer), players.get(j), changeX, changeY) && numberOfPlayer != j) {
-                players.get(numberOfPlayer).getTank().getMp().setDirection(direction);
-                players.get(numberOfPlayer).getTank().move();
-            }
-        }
-    }
-
-    // TODO same
-    private void isBulletReachedObject() {
-        for (Player player : players) {
-            if (player.isCondition()) {
-                checkDestroy(player.getBullets());
-            }
-        }
-
-        for (int i = 0; i < players.size(); i++) {
-            for (int j = 0; j < players.size() && i != j; j++) {
-                checkDestroyForBullets(players.get(i), players.get(j));
-            }
-        }
-    }
-
-    // TODO same
-    private boolean layering(Tank tank, int changeX, int changeY) {
-        for (Wall wall : walls) {
-            if (wall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
-            }
-        }
-
-        for (IndestructibleWall indestructibleWall : indestructibleWalls) {
-            if (indestructibleWall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
-            }
-        }
-
-        for (Water lake : lakes) {
-            if (lake.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean pairTankLayering(Player player1, Player player2, int changeX, int changeY) {
-        if (player1.isCondition() && player2.isCondition()) {
-            return player2.getTank().intersects(new Position(player1.getTank().getPosition().x() + changeX, player1.getTank().getPosition().y() + changeY));
-        }
-        return false;
-    }
-
-    // TODO same
-    private void checkDestroy(List<Bullet> bullets) {
-        for (int i = 0; i < bullets.size(); i++) {
-            for (int j = 0; j < walls.size(); j++) {
-                if (walls.get(j).destroy(walls.get(j).getPosition(), bullets.get(i))) {
-                    walls.remove(j);
-                    bullets.remove(i);
-                    this.repaint();
-                    break;
-                }
-            }
-        }
-
-        for (int i = 0; i < bullets.size(); i++) {
-            for (IndestructibleWall indestructibleWall : indestructibleWalls) {
-                if (bullets.get(i).destroy(indestructibleWall.getPosition(), bullets.get(i))) {
-                    bullets.remove(i);
-                    this.repaint();
-                    break;
-                }
-            }
-        }
-
-        for (int i = 0; i < bullets.size(); i++) {
-            for (Player player : players) {
-                if (checkTankIntersection(bullets, i, player)) break;
-            }
-        }
-    }
-
-
-    private boolean checkTankIntersection(List<Bullet> bullets, int i, Player player) {
-        if (player.isCondition()) {
-            if (player.getTank().destroy(player.getTank().getPosition(), bullets.get(i))) {
-                player.setCondition(false);
-                bullets.remove(i);
-                this.repaint();
-                player.setTank(null);
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public void checkDestroyForBullets(Player player1, Player player2) {
-        for (int i = 0; i < player1.getBullets().size(); i++) {
-            for (int j = 0; j < player2.getBullets().size(); j++) {
-                if (player1.isCondition()) {
-                    if (player1.getBullets().get(i).destroy(player2.getBullets().get(j))
-                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() + 50, player2.getBullets().get(j).getPosition().y()), new MoveParameters(50)))
-                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x() - 50, player2.getBullets().get(j).getPosition().y()), new MoveParameters(50)))
-                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x(), player2.getBullets().get(j).getPosition().y() + 50), new MoveParameters(50)))
-                            || player1.getBullets().get(i).destroy(player1.getBullets().get(i).getPosition(), new Bullet(new Position(player2.getBullets().get(j).getPosition().x(), player2.getBullets().get(j).getPosition().y() - 50), new MoveParameters(50)))) {
-                        player1.getBullets().remove(i);
-                        player2.getBullets().remove(j);
-                        update();
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     private void update() {
         this.removeAll();
         this.repaint();
         this.revalidate();
-    }
-
-    private void initAllObjects() {
-        tankStartPositions.add(new Position(75, 125));
-        tankStartPositions.add(new Position(1225, 625));
-        List<Tank> tankList = Initialization.initTanks(tankStartPositions);
-
-        playersBullets = new ArrayList<>();
-        for (int i = 0; i < tankList.size(); i++) {
-            playersBullets.add(new ArrayList<>());
-        }
-
-        players = Initialization.initPlayers(tankList, playersBullets);
-
-        walls = Initialization.initWalls();
-        indestructibleWalls = Initialization.initIndestructibleWalls();
-        lakes = Initialization.initWater();
-        thickets = Initialization.initThickets();
     }
 
     private void drawGrid(Graphics2D g) {
@@ -372,21 +230,23 @@ public class DrawPanel extends JPanel {
 
         if (timer.isRunning()) {
             for (Player player : players) {
-                for (int j = 0; j < player.getBullets().size(); j++) {
-                    player.getBullets().get(j).draw(g2d);
+                for (int j = 0; j < player.getTank().getBullets().size(); j++) {
+                    player.getTank().getBullets().get(j).draw(g2d);
                 }
             }
 
-            for (List<Bullet> playersBullet : playersBullets) {
-                for (Bullet value : playersBullet) {
-                    value.draw(g2d);
+            for (Player player : players) {
+                for (int j = 0; j < player.getTank().getBullets().size(); j++) {
+                    player.getTank().getBullets().get(j).draw(g2d);
                 }
             }
 
-            isBulletReachedObject();
+            logicRealizationDp.checkBulletReachedObject(players, walls, indestructibleWalls);
+            update();
+
             boolean flag = false;
-            for (List<Bullet> playersBullet : playersBullets) {
-                if (playersBullet.size() != 0) {
+            for (Player player : players) {
+                if (player.getTank().getBullets().size() != 0) {
                     flag = true;
                     break;
                 }
@@ -399,7 +259,135 @@ public class DrawPanel extends JPanel {
         for (Thickets thicket : thickets) {
             thicket.draw(g2d);
         }
+    }
 
+    private void initAllObjects() {
+
+        Tank tank1 = Initialization.initTank(new Position(75, 125), 50);
+        Tank tank2 = Initialization.initTank(new Position(1225, 625), 50);
+        tanks.add(tank1);
+        tanks.add(tank2);
+
+        Wall wall;
+        int x = 75;
+        int y = 175;
+        for (int i = 0; i < 4; i++) {
+            wall = Initialization.initWall(new Position(x + 50 * i, y));
+            walls.add(wall);
+        }
+        x = 1075;
+        y = 575;
+        for (int i = 0; i < 4; i++) {
+            wall = Initialization.initWall(new Position(x + 50 * i, y));
+            walls.add(wall);
+        }
+
+        x = 375;
+        y = 275;
+        for (int i = 0; i < 5; i++) {
+            wall = Initialization.initWall(new Position(x, y + i * 50));
+            walls.add(wall);
+        }
+        x = 925;
+        for (int i = 0; i < 5; i++) {
+            wall = new Wall(new Position(x, y + i * 50));
+            walls.add(wall);
+        }
+
+        x = 375;
+        y = 75;
+        makeWallsBlock(x, y);
+
+        y = 575;
+        makeWallsBlock(x, y);
+
+        IndestructibleWall indestructibleWall;
+        x = 25;
+
+        for (int i = 0; i < 26; i++) {
+            indestructibleWall = Initialization.initIndestructibleWall(new Position(x + 50 * i, 25));
+            indestructibleWalls.add(indestructibleWall);
+        }
+
+        y = 75;
+        for (int i = 0; i < 13; i++) {
+            indestructibleWall = Initialization.initIndestructibleWall(new Position(25, y + 50 * i));
+            indestructibleWalls.add(indestructibleWall);
+        }
+        for (int i = 0; i < 13; i++) {
+            indestructibleWall = Initialization.initIndestructibleWall(new Position(1275, y + 50 * i));
+            indestructibleWalls.add(indestructibleWall);
+        }
+        for (int i = 0; i < 26; i++) {
+            indestructibleWall = Initialization.initIndestructibleWall(new Position(x + 50 * i, 725));
+            indestructibleWalls.add(indestructibleWall);
+        }
+
+        x = 125;
+        y = 325;
+        for (int i = 0; i < 3; i++) {
+            indestructibleWall = Initialization.initIndestructibleWall(new Position(x, y + i * 50));
+            indestructibleWalls.add(indestructibleWall);
+        }
+
+        x = 1175;
+        for (int i = 0; i < 3; i++) {
+            indestructibleWall = Initialization.initIndestructibleWall(new Position(x, y + i * 50));
+            indestructibleWalls.add(indestructibleWall);
+        }
+
+        players = Initialization.initPlayers(tanks);
+
+        Water lake;
+        x = 425;
+        y = 275;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 10; j++) {
+                lake = Initialization.initWater(new Position(x + j * 50, y + i * 50));
+                lakes.add(lake);
+            }
+        }
+
+        Thickets thicket;
+        x = 125;
+        y = 75;
+        makeThicketsBlock(thickets, x, y);
+        x = 1075;
+        y = 625;
+        makeThicketsBlock(thickets, x, y);
+
+        x = 375;
+        y = 225;
+
+        for (int j = 0; j < 12; j++) {
+            thicket = Initialization.initThickets(new Position(x + j * 50, y));
+            thickets.add(thicket);
+        }
+        y = 525;
+        for (int j = 0; j < 12; j++) {
+            thicket = Initialization.initThickets(new Position(x + j * 50, y));
+            thickets.add(thicket);
+        }
+    }
+
+    private static void makeThicketsBlock(List<Thickets> thickets, int x, int y) {
+        Thickets thicket;
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                thicket = Initialization.initThickets(new Position(x + 50 * j, y + 50 * i));
+                thickets.add(thicket);
+            }
+        }
+    }
+
+    private void makeWallsBlock(int x, int y) {
+        Wall wall;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 12; j++) {
+                wall = Initialization.initWall(new Position(x + j * 50, y + i * 50));
+                walls.add(wall);
+            }
+        }
     }
 
     private static final String LEFT_P1 = "Left1";

@@ -18,6 +18,6 @@ public class Bullet extends MovableObject implements Destroyable, Drawable {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        DrawUtils.drawBullet(graphics2D,getPosition(),getMp().getDirection());
+        DrawUtils.drawBullet(graphics2D, getPosition(), getMp().getDirection());
     }
 }

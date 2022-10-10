@@ -18,7 +18,7 @@ public class Tank extends MovableObject implements Destroyable, Drawable {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        DrawUtils.drawTank(graphics2D,getPosition(), getMp().getDirection());
+        DrawUtils.drawTank(graphics2D, getPosition(), getMp().getDirection());
     }
 
     public boolean isFire() {

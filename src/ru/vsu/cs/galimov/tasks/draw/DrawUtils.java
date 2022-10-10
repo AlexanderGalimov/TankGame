@@ -11,7 +11,6 @@ public class DrawUtils {
     private static final Image tankRight = loadImage("Images/tankImages/tankRight.png");
     private static final Image tankUp = loadImage("Images/tankImages/tankUp.png");
     private static final Image tankDown = loadImage("Images/tankImages/tankDown.png");
-
     private static final Image bulletLeft = loadImage("Images/bulletImages/bulletLeft.png");
     private static final Image bulletRight = loadImage("Images/bulletImages/bulletRight.png");
     private static final Image bulletUp = loadImage("Images/bulletImages/bulletUp.jpeg");
@@ -32,7 +31,7 @@ public class DrawUtils {
         g2d.drawImage(wall, position.x() - 25, position.y() - 25, null);
     }
 
-    public static void drawUndestroyableWall(Graphics2D g2d, Position position) {
+    public static void drawIndestructibleWall(Graphics2D g2d, Position position) {
         g2d.drawImage(indestructibleWall, position.x() - 25, position.y() - 25, null);
     }
 

@@ -15,6 +15,6 @@ public class IndestructibleWall extends BattleFieldObject implements Drawable {
 
     @Override
     public void draw(Graphics2D graphics2D) {
-        DrawUtils.drawUndestroyableWall(graphics2D,getPosition());
+        DrawUtils.drawIndestructibleWall(graphics2D, getPosition());
     }
 }

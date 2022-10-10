@@ -2,7 +2,7 @@ package ru.vsu.cs.galimov.tasks.model;
 
 import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
-public abstract class BattleFieldObject{
+public abstract class BattleFieldObject {
     protected Position position;
 
     public BattleFieldObject(Position position) {
@@ -17,7 +17,7 @@ public abstract class BattleFieldObject{
         this.position = position;
     }
 
-    public boolean intersects(Position p){
+    public boolean intersects(Position p) {
         return this.position.x() == p.x() && this.position.y() == p.y();
     }
 }
