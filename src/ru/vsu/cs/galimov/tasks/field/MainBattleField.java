@@ -1,7 +1,7 @@
 package ru.vsu.cs.galimov.tasks.field;
 
 import ru.vsu.cs.galimov.tasks.initialization.Initialization;
-import ru.vsu.cs.galimov.tasks.logic.LogicRealizationMainBF;
+import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
@@ -18,27 +18,28 @@ public class MainBattleField {
     private final List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
     private final List<Wall> walls = new ArrayList<>();
     private final List<Water> lakes = new ArrayList<>();
-    private final LogicRealizationMainBF logicRealizationMainBF = new LogicRealizationMainBF();
+    private final LogicRealization logicRealization = new LogicRealization();
 
-    private boolean inputKey() {
+    private boolean inputKey(int numberOfPlayer) {
+        System.out.println("player" + " " + numberOfPlayer);
         String str = sc.next();
         if (Objects.equals(str, "w")) {
-            logicRealizationMainBF.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -1, 0);
+            logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -1, numberOfPlayer - 1);
             return true;
         } else if (Objects.equals(str, "s")) {
-            logicRealizationMainBF.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 1, 0);
+            logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 1, numberOfPlayer - 1);
             return true;
         } else if (Objects.equals(str, "a")) {
-            logicRealizationMainBF.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -1, 0, 0);
+            logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -1, 0, numberOfPlayer - 1);
             return true;
         } else if (Objects.equals(str, "d")) {
-            logicRealizationMainBF.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 1, 0, 0);
+            logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 1, 0, numberOfPlayer - 1);
             return true;
         }
 
         if (Objects.equals(str, "f")) {
-            players.get(0).getTank().setFire(true);
-            Initialization.setBulletParams(players.get(0).getTank(), 1);
+            players.get(numberOfPlayer - 1).getTank().setFire(true);
+            Initialization.setBulletParams(players.get(numberOfPlayer - 1).getTank(), 1);
             return true;
         }
         return !Objects.equals(str, "q");
@@ -73,39 +74,46 @@ public class MainBattleField {
             walls.add(wall);
         }
 
-        Tank tank = Initialization.initTank(new Position(5, 5), 1);
-        tanks.add(tank);
+        Tank tank1 = Initialization.initTank(new Position(5, 5), 1);
+        tanks.add(tank1);
+
+        Tank tank2 = Initialization.initTank(new Position(8, 5), 1);
+        tanks.add(tank2);
 
         players = Initialization.initPlayers(tanks);
 
         updateField();
 
-        inputActions(players.get(0).getTank());
-
+        boolean flag = false;
+        while (true) {
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i).isCondition()) {
+                    flag = true;
+                    if (inputKey(i + 1)) {
+                        inputActions(players.get(i).getTank());
+                    }
+                }
+                updateField();
+                printField();
+            }
+            if (!flag) {
+                break;
+            }
+            flag = false;
+        }
         printField();
     }
 
     private void inputActions(Tank tank) {
-        while (true) {
-            if (inputKey()) {
-                if (tank.isFire()) {
-                    while (true) {
-                        if (players.get(0).getTank().getBullets().size() != 0) {
-                            logicRealizationMainBF.checkBulletReachedObject(players, walls, indestructibleWalls);
-                            for (int i = 0; i < players.get(0).getTank().getBullets().size(); i++) {
-                                players.get(0).getTank().getBullets().get(i).move();
-                            }
-                            logicRealizationMainBF.checkBulletReachedObject(players, walls, indestructibleWalls);
-                        } else {
-                            break;
-                        }
-                    }
-                    tank.setFire(false);
+        if (tank.isFire()) {
+            if (tank.getBullets().size() != 0) {
+                logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls);
+                for (int i = 0; i < tank.getBullets().size(); i++) {
+                    tank.getBullets().get(i).move();
                 }
-            } else {
-                break;
+                logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls);
             }
-            updateField();
+            tank.setFire(false);
         }
     }
 
@@ -126,17 +134,21 @@ public class MainBattleField {
             field[currentWall.getPosition().y()][currentWall.getPosition().x()] = 'W';
         }
 
-        if (players.get(0).getTank().getMp().getDirection() == MoveDirections.LEFT) {
-            field[players.get(0).getTank().getPosition().y()][players.get(0).getTank().getPosition().x()] = '<';
-        } else if (players.get(0).getTank().getMp().getDirection() == MoveDirections.RIGHT) {
-            field[players.get(0).getTank().getPosition().y()][players.get(0).getTank().getPosition().x()] = '>';
-        } else if (players.get(0).getTank().getMp().getDirection() == MoveDirections.UP) {
-            field[players.get(0).getTank().getPosition().y()][players.get(0).getTank().getPosition().x()] = '^';
-        } else if (players.get(0).getTank().getMp().getDirection() == MoveDirections.DOWN) {
-            field[players.get(0).getTank().getPosition().y()][players.get(0).getTank().getPosition().x()] = 'v';
+        for (Player player : players) {
+            if (player.isCondition()) {
+                if (player.getTank().getMp().getDirection() == MoveDirections.LEFT) {
+                    field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '<';
+                } else if (player.getTank().getMp().getDirection() == MoveDirections.RIGHT) {
+                    field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '>';
+                } else if (player.getTank().getMp().getDirection() == MoveDirections.UP) {
+                    field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = '^';
+                } else if (player.getTank().getMp().getDirection() == MoveDirections.DOWN) {
+                    field[player.getTank().getPosition().y()][player.getTank().getPosition().x()] = 'v';
+                }
+            }
         }
-
         printField();
+
     }
 
     private void printField() {

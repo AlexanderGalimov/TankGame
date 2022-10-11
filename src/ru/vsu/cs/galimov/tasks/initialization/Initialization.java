@@ -45,7 +45,6 @@ public class Initialization {
         return new Water(position);
     }
 
-    // todo модификатор доступа
     public static void setBulletParams(Tank tank, int velocity) {
         if (tank.getMp().getDirection() == MoveDirections.LEFT) {
             tank.getBullets().add(new Bullet(new Position(tank.getPosition().x() - velocity, tank.getPosition().y()), new MoveParameters(velocity)));
