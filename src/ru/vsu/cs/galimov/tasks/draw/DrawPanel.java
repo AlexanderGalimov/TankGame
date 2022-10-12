@@ -326,8 +326,8 @@ public class DrawPanel extends JPanel {
 
     private void initAllObjects() {
 
-        Tank tank1 = Initialization.initTank(new Position(1225, 325), 50);
-        Tank tank2 = Initialization.initTank(new Position(1225, 525), 50);
+        Tank tank1 = Initialization.initTank(new Position(75, 125), 50);
+        Tank tank2 = Initialization.initTank(new Position(1225, 625), 50);
         tanks.add(tank1);
         tanks.add(tank2);
 
