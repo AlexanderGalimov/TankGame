@@ -2,6 +2,7 @@ package ru.vsu.cs.galimov.tasks.draw;
 
 import ru.vsu.cs.galimov.tasks.initialization.Initialization;
 import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
+import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Thickets;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
@@ -24,6 +25,7 @@ public class DrawPanel extends JPanel {
     private final List<Water> lakes = new ArrayList<>();
     private final List<Thickets> thickets = new ArrayList<>();
     private final LogicRealization logicRealization = new LogicRealization();
+    private final List<Turn> turns = new ArrayList<>();
 
     public DrawPanel() {
 
@@ -46,8 +48,15 @@ public class DrawPanel extends JPanel {
         Action leftFp = new AbstractAction(LEFT_P1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(0).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 0);
+                turns.get(0).setTurned(turns.get(0).getDirection() == MoveDirections.LEFT);
+                if(!turns.get(0).isTurned()){
+                    logicRealization.turnTank(players.get(0), MoveDirections.LEFT);
+                    turns.get(0).setDirection(MoveDirections.LEFT);
+                }
+                else {
+                    if (players.get(0).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 0);
+                    }
                 }
                 update();
             }
@@ -60,8 +69,15 @@ public class DrawPanel extends JPanel {
         Action rightFp = new AbstractAction(RIGHT_P1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(0).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 0);
+                turns.get(0).setTurned(turns.get(0).getDirection() == MoveDirections.RIGHT);
+                if(!turns.get(0).isTurned()){
+                    logicRealization.turnTank(players.get(0), MoveDirections.RIGHT);
+                    turns.get(0).setDirection(MoveDirections.RIGHT);
+                }
+                else{
+                    if (players.get(0).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 0);
+                    }
                 }
                 update();
             }
@@ -73,20 +89,35 @@ public class DrawPanel extends JPanel {
         Action upFp = new AbstractAction(UPP1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(0).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 0);
+                turns.get(0).setTurned(turns.get(0).getDirection() == MoveDirections.UP);
+                if(!turns.get(0).isTurned()){
+                    logicRealization.turnTank(players.get(0), MoveDirections.UP);
+                    turns.get(0).setDirection(MoveDirections.UP);
+                }
+                else{
+                    if (players.get(0).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 0);
+                    }
                 }
                 update();
             }
         };
         this.getActionMap().put(UPP1, upFp);
+
         this.getInputMap().put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), DOWN_P1);
         Action downFp = new AbstractAction(DOWN_P1) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(0).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 0);
+                turns.get(0).setTurned(turns.get(0).getDirection() == MoveDirections.DOWN);
+                if(!turns.get(0).isTurned()){
+                    logicRealization.turnTank(players.get(0), MoveDirections.DOWN);
+                    turns.get(0).setDirection(MoveDirections.DOWN);
+                }
+                else{
+                    if (players.get(0).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 0);
+                    }
                 }
                 update();
             }
@@ -98,8 +129,15 @@ public class DrawPanel extends JPanel {
         Action leftSp = new AbstractAction(LEFT_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(1).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 1);
+                turns.get(1).setTurned(turns.get(1).getDirection() == MoveDirections.LEFT);
+                if(!turns.get(1).isTurned()){
+                    logicRealization.turnTank(players.get(1), MoveDirections.LEFT);
+                    turns.get(1).setDirection(MoveDirections.LEFT);
+                }
+                else {
+                    if (players.get(1).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 1);
+                    }
                 }
                 update();
             }
@@ -110,8 +148,16 @@ public class DrawPanel extends JPanel {
         Action rightSp = new AbstractAction(RIGHT_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(1).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 1);
+
+                turns.get(1).setTurned(turns.get(1).getDirection() == MoveDirections.RIGHT);
+                if(!turns.get(1).isTurned()){
+                    logicRealization.turnTank(players.get(1), MoveDirections.RIGHT);
+                    turns.get(1).setDirection(MoveDirections.RIGHT);
+                }
+                else {
+                    if (players.get(1).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 1);
+                    }
                 }
                 update();
             }
@@ -123,8 +169,16 @@ public class DrawPanel extends JPanel {
         Action upSp = new AbstractAction(UP_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(1).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 1);
+
+                turns.get(1).setTurned(turns.get(1).getDirection() == MoveDirections.UP);
+                if(!turns.get(1).isTurned()){
+                    logicRealization.turnTank(players.get(1), MoveDirections.UP);
+                    turns.get(1).setDirection(MoveDirections.UP);
+                }
+                else {
+                    if (players.get(1).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 1);
+                    }
                 }
                 update();
             }
@@ -136,8 +190,16 @@ public class DrawPanel extends JPanel {
         Action downSp = new AbstractAction(DOWN_P2) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (players.get(1).isCondition()) {
-                    logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 1);
+
+                turns.get(1).setTurned(turns.get(1).getDirection() == MoveDirections.DOWN);
+                if(!turns.get(1).isTurned()){
+                    logicRealization.turnTank(players.get(1), MoveDirections.DOWN);
+                    turns.get(1).setDirection(MoveDirections.DOWN);
+                }
+                else {
+                    if (players.get(1).isCondition()) {
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 1);
+                    }
                 }
                 update();
             }
@@ -264,8 +326,8 @@ public class DrawPanel extends JPanel {
 
     private void initAllObjects() {
 
-        Tank tank1 = Initialization.initTank(new Position(75, 125), 50);
-        Tank tank2 = Initialization.initTank(new Position(1225, 625), 50);
+        Tank tank1 = Initialization.initTank(new Position(1225, 325), 50);
+        Tank tank2 = Initialization.initTank(new Position(1225, 525), 50);
         tanks.add(tank1);
         tanks.add(tank2);
 
@@ -368,6 +430,12 @@ public class DrawPanel extends JPanel {
         for (int j = 0; j < 12; j++) {
             thicket = Initialization.initThickets(new Position(x + j * 50, y));
             thickets.add(thicket);
+        }
+
+        Turn turn;
+        for (int i = 0; i < 2; i++) {
+            turn = Initialization.initTurn(players.get(i));
+            turns.add(turn);
         }
     }
 

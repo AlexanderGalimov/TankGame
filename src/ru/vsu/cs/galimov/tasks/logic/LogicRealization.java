@@ -126,7 +126,12 @@ public class LogicRealization implements Destroying, Layering, Moving {
 
     @Override
     public void moveTank(Player player, MoveDirections direction) {
-        player.getTank().getMp().setDirection(direction);
         player.getTank().move();
     }
+
+    @Override
+    public void turnTank(Player player, MoveDirections direction) {
+        player.getTank().getMp().setDirection(direction);
+    }
+
 }
