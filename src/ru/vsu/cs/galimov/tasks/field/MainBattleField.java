@@ -4,6 +4,7 @@ import ru.vsu.cs.galimov.tasks.initialization.Initialization;
 import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
 import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
+import ru.vsu.cs.galimov.tasks.model.staticObject.Eagle;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
@@ -21,47 +22,44 @@ public class MainBattleField {
     private final List<Water> lakes = new ArrayList<>();
     private final LogicRealization logicRealization = new LogicRealization();
     private final List<Turn> turns = new ArrayList<>();
+    private final List<Eagle> eagles = new ArrayList<>();
 
     private boolean inputKey(int numberOfPlayer) {
         System.out.println("player" + " " + (numberOfPlayer + 1));
         String str = sc.next();
         if (Objects.equals(str, "w")) {
             turns.get(numberOfPlayer).setTurned(turns.get(numberOfPlayer).getDirection() == MoveDirections.UP);
-            if(!turns.get(numberOfPlayer).isTurned()){
+            if (!turns.get(numberOfPlayer).isTurned()) {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.UP);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.UP);
-            }
-            else {
+            } else {
                 logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -1, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "s")) {
             turns.get(numberOfPlayer).setTurned(turns.get(numberOfPlayer).getDirection() == MoveDirections.DOWN);
-            if(!turns.get(numberOfPlayer).isTurned()){
+            if (!turns.get(numberOfPlayer).isTurned()) {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.DOWN);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.DOWN);
-            }
-            else {
+            } else {
                 logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 1, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "a")) {
             turns.get(numberOfPlayer).setTurned(turns.get(numberOfPlayer).getDirection() == MoveDirections.LEFT);
-            if(!turns.get(numberOfPlayer).isTurned()){
+            if (!turns.get(numberOfPlayer).isTurned()) {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.LEFT);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.LEFT);
-            }
-            else {
+            } else {
                 logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -1, 0, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "d")) {
             turns.get(numberOfPlayer).setTurned(turns.get(numberOfPlayer).getDirection() == MoveDirections.RIGHT);
-            if(!turns.get(numberOfPlayer).isTurned()){
+            if (!turns.get(numberOfPlayer).isTurned()) {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.RIGHT);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.RIGHT);
-            }
-            else{
+            } else {
                 logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 1, 0, numberOfPlayer);
             }
             return true;
@@ -147,10 +145,10 @@ public class MainBattleField {
             if (tank.getBullets().size() != 0) {
                 for (int i = 0; i < tank.getBullets().size(); i++) {
                     int size = tank.getBullets().size();
-                    logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls);
-                    while (size == tank.getBullets().size()){
+                    logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, 1);
+                    while (size == tank.getBullets().size()) {
                         tank.getBullets().get(i).move();
-                        logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls);
+                        logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, 1);
                     }
                 }
             }

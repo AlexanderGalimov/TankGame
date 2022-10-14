@@ -1,6 +1,7 @@
 package ru.vsu.cs.galimov.tasks.logic;
 
 import ru.vsu.cs.galimov.tasks.model.movable.*;
+import ru.vsu.cs.galimov.tasks.model.staticObject.Eagle;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
@@ -10,11 +11,21 @@ import java.util.List;
 
 public class LogicRealization implements Destroying, Layering, Moving {
     @Override
-    public void checkDestroy(Player player, List<Wall> walls, List<IndestructibleWall> indestructibleWalls) {
+    public void checkDestroy(Player player, List<Wall> walls, List<IndestructibleWall> indestructibleWalls, List<Eagle> eagles) {
         for (int i = 0; i < player.getTank().getBullets().size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
                 if (walls.get(j).destroy(walls.get(j).getPosition(), player.getTank().getBullets().get(i))) {
                     walls.remove(j);
+                    player.getTank().getBullets().remove(i);
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < player.getTank().getBullets().size(); i++) {
+            for (Eagle eagle : eagles) {
+                if (eagle.destroy(eagle.getPosition(), player.getTank().getBullets().get(i))) {
+                    eagle.setAlive(false);
                     player.getTank().getBullets().remove(i);
                     break;
                 }
@@ -32,7 +43,7 @@ public class LogicRealization implements Destroying, Layering, Moving {
     }
 
     @Override
-    public void checkBulletReachedObject(List<Player> players, List<Wall> walls, List<IndestructibleWall> indestructibleWalls) {
+    public void checkBulletReachedObject(List<Player> players, List<Wall> walls, List<IndestructibleWall> indestructibleWalls, List<Eagle> eagles, int velocity) {
         for (Player player : players) {
             if (player.isCondition()) {
                 for (int i = 0; i < player.getTank().getBullets().size(); i++) {
@@ -40,29 +51,29 @@ public class LogicRealization implements Destroying, Layering, Moving {
                         if (checkTankIntersection(player.getTank().getBullets(), i, value)) break;
                     }
                 }
-                checkDestroy(player, walls, indestructibleWalls);
+                checkDestroy(player, walls, indestructibleWalls, eagles);
             }
         }
 
         for (int i = 0; i < players.size(); i++) {
             for (int j = 0; j < players.size(); j++) {
                 if (i != j) {
-                    checkDestroyForBullets(players.get(i), players.get(j));
+                    checkDestroyForBullets(players.get(i), players.get(j), velocity);
                 }
             }
         }
     }
 
     @Override
-    public void checkDestroyForBullets(Player player1, Player player2) {
+    public void checkDestroyForBullets(Player player1, Player player2, int velocity) {
         for (int i = 0; i < player1.getTank().getBullets().size(); i++) {
             for (int j = 0; j < player2.getTank().getBullets().size(); j++) {
                 if (player1.isCondition()) {
                     if (player1.getTank().getBullets().get(i).destroy(player2.getTank().getBullets().get(j))
-                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x() + player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y()), new MoveParameters(50)))
-                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x() - player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y()), new MoveParameters(50)))
-                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x(), player2.getTank().getBullets().get(j).getPosition().y() + player2.getTank().getBullets().get(j).getMp().getVelocity()), new MoveParameters(50)))
-                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x(), player2.getTank().getBullets().get(j).getPosition().y() - player2.getTank().getBullets().get(j).getMp().getVelocity()), new MoveParameters(50)))) {
+                            || (player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x() + player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y()), new MoveParameters(velocity)))
+                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x() - player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y()), new MoveParameters(velocity))))
+                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x(), player2.getTank().getBullets().get(j).getPosition().y() + player2.getTank().getBullets().get(j).getMp().getVelocity()), new MoveParameters(velocity)))
+                            || player1.getTank().getBullets().get(i).destroy(player1.getTank().getBullets().get(i).getPosition(), new Bullet(new Position(player2.getTank().getBullets().get(j).getPosition().x(), player2.getTank().getBullets().get(j).getPosition().y() - player2.getTank().getBullets().get(j).getMp().getVelocity()), new MoveParameters(velocity)))) {
                         player1.getTank().getBullets().remove(i);
                         player2.getTank().getBullets().remove(j);
                         break;

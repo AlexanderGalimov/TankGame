@@ -19,6 +19,7 @@ public class DrawUtils {
     private static final Image indestructibleWall = loadImage("Images/indestructibleWall.jpeg");
     private static final Image water = loadImage("Images/water.jpeg");
     private static final Image thickets = loadImage("Images/thickets.jpeg");
+    private static final Image eagle = loadImage("Images/eagle.jpg");
 
     public static void drawTank(Graphics2D g2d, Position position, MoveDirections direction) {
         Position newPosition = new Position(position.x() - 25, position.y() - 25);
@@ -33,6 +34,10 @@ public class DrawUtils {
 
     public static void drawIndestructibleWall(Graphics2D g2d, Position position) {
         g2d.drawImage(indestructibleWall, position.x() - 25, position.y() - 25, null);
+    }
+
+    public static void drawEagle(Graphics2D g2d, Position position) {
+        g2d.drawImage(eagle, position.x() - 25, position.y() - 25, null);
     }
 
     public static void drawWater(Graphics2D g2d, Position position) {

@@ -2,10 +2,7 @@ package ru.vsu.cs.galimov.tasks.initialization;
 
 import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
-import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Thickets;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
+import ru.vsu.cs.galimov.tasks.model.staticObject.*;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
 import java.util.ArrayList;
@@ -46,8 +43,14 @@ public class Initialization {
         return new Water(position);
     }
 
-    public static Turn initTurn(Player player){
-        return new Turn(false,player.getTank().getMp().getDirection());
+    public static Eagle initEagle(Position position) {
+        Eagle eagle = new Eagle(position);
+        eagle.setAlive(true);
+        return eagle;
+    }
+
+    public static Turn initTurn(Player player) {
+        return new Turn(false, player.getTank().getMp().getDirection());
     }
 
     public static void setBulletParams(Tank tank, int velocity) {
