@@ -1,6 +1,5 @@
 package ru.vsu.cs.galimov.tasks.draw;
 
-import ru.vsu.cs.galimov.tasks.initialization.Initialization;
 import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
 import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
@@ -14,9 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrawPanel extends JPanel {
+    // todo
     private final Timer timer;
     private final List<Tank> tanks = new ArrayList<>();
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
     private final List<Wall> walls = new ArrayList<>();
     private final List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
     private final List<Water> lakes = new ArrayList<>();
@@ -24,6 +24,8 @@ public class DrawPanel extends JPanel {
     private final LogicRealization logicRealization = new LogicRealization();
     private final List<Turn> turns = new ArrayList<>();
     private final List<Eagle> eagles = new ArrayList<>();
+    // todo
+    private final int velocity = 50;
 
     public DrawPanel() {
 
@@ -52,7 +54,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.LEFT);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -velocity, 0, 0);
                     }
                 }
                 update();
@@ -72,7 +74,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.RIGHT);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, velocity, 0, 0);
                     }
                 }
                 update();
@@ -91,7 +93,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.UP);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -velocity, 0);
                     }
                 }
                 update();
@@ -110,7 +112,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.DOWN);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, velocity, 0);
                     }
                 }
                 update();
@@ -129,7 +131,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.LEFT);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -50, 0, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -velocity, 0, 1);
                     }
                 }
                 update();
@@ -148,7 +150,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.RIGHT);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 50, 0, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, velocity, 0, 1);
                     }
                 }
                 update();
@@ -168,7 +170,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.UP);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -50, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -velocity, 1);
                     }
                 }
                 update();
@@ -188,7 +190,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.DOWN);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 50, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, velocity, 1);
                     }
                 }
                 update();
@@ -203,7 +205,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(0).isCondition()) {
-                    Initialization.setBulletParams(players.get(0).getTank(), 50);
+                    players.get(0).getTank().shoot();
                     update();
                     if (!timer.isRunning()) {
                         timer.start();
@@ -220,7 +222,7 @@ public class DrawPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (players.get(1).isCondition()) {
-                    Initialization.setBulletParams(players.get(1).getTank(), 50);
+                    players.get(1).getTank().shoot();
                     update();
                     if (!timer.isRunning()) {
                         timer.start();
@@ -240,19 +242,19 @@ public class DrawPanel extends JPanel {
     private void drawGrid(Graphics2D g) {
         g.setColor(Color.LIGHT_GRAY);
 
-        for (int x = 650; x < 1300; x += 50) {
+        for (int x = 650; x < 1300; x += velocity) {
             g.drawLine(x, 0, x, 1000);
         }
 
-        for (int x = 650; x > 0; x -= 50) {
+        for (int x = 650; x > 0; x -= velocity) {
             g.drawLine(x, 0, x, 1000);
         }
 
-        for (int y = 500; y < getHeight(); y += 50) {
+        for (int y = 500; y < getHeight(); y += velocity) {
             g.drawLine(0, y, 1300, y);
         }
 
-        for (int y = 500; y > 0; y -= 50) {
+        for (int y = 500; y > 0; y -= velocity) {
             g.drawLine(0, y, 1300, y);
         }
     }
@@ -300,7 +302,7 @@ public class DrawPanel extends JPanel {
                 }
             }
 
-            logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, 50);
+            logicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, velocity);
             update();
 
             boolean flag = false;
@@ -322,12 +324,23 @@ public class DrawPanel extends JPanel {
 
     private void initAllObjects() {
 
-        Tank tank1 = Initialization.initTank(new Position(75, 125), 50);
-        Tank tank2 = Initialization.initTank(new Position(1225, 625), 50);
+        Tank tank1 = new Tank(new Position(75, 125), new MoveParameters(velocity));
+        tank1.getMp().setDirection(MoveDirections.RIGHT);
+        Tank tank2 = new Tank(new Position(1225, 625), new MoveParameters(velocity));
+        tank1.getMp().setDirection(MoveDirections.LEFT);
         tanks.add(tank1);
         tanks.add(tank2);
-        Eagle eagle1 = Initialization.initEagle(new Position(75, 375));
-        Eagle eagle2 = Initialization.initEagle(new Position(1225, 375));
+
+        Player player;
+        for (Tank tank : tanks) {
+            player = new Player(tank, true);
+            player.getTank().setBullets(new ArrayList<>());
+            players.add(player);
+        }
+
+        Eagle eagle1 = new Eagle(new Position(75, 375));
+        Eagle eagle2 = new Eagle(new Position(1225, 375));
+
         eagles.add(eagle1);
         eagles.add(eagle2);
 
@@ -335,20 +348,20 @@ public class DrawPanel extends JPanel {
         int x = 75;
         int y = 175;
         for (int i = 0; i < 4; i++) {
-            wall = Initialization.initWall(new Position(x + 50 * i, y));
+            wall = new Wall(new Position(x + 50 * i, y));
             walls.add(wall);
         }
         x = 1075;
         y = 575;
         for (int i = 0; i < 4; i++) {
-            wall = Initialization.initWall(new Position(x + 50 * i, y));
+            wall = new Wall(new Position(x + 50 * i, y));
             walls.add(wall);
         }
 
         x = 375;
         y = 275;
         for (int i = 0; i < 5; i++) {
-            wall = Initialization.initWall(new Position(x, y + i * 50));
+            wall = new Wall(new Position(x, y + i * 50));
             walls.add(wall);
         }
         x = 925;
@@ -377,45 +390,43 @@ public class DrawPanel extends JPanel {
         x = 25;
 
         for (int i = 0; i < 26; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(x + 50 * i, 25));
+            indestructibleWall = new IndestructibleWall(new Position(x + 50 * i, 25));
             indestructibleWalls.add(indestructibleWall);
         }
 
         y = 75;
         for (int i = 0; i < 13; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(25, y + 50 * i));
+            indestructibleWall = new IndestructibleWall(new Position(25, y + 50 * i));
             indestructibleWalls.add(indestructibleWall);
         }
         for (int i = 0; i < 13; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(1275, y + 50 * i));
+            indestructibleWall = new IndestructibleWall(new Position(1275, y + 50 * i));
             indestructibleWalls.add(indestructibleWall);
         }
         for (int i = 0; i < 26; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(x + 50 * i, 725));
+            indestructibleWall = new IndestructibleWall(new Position(x + 50 * i, 725));
             indestructibleWalls.add(indestructibleWall);
         }
 
         x = 125;
         y = 325;
         for (int i = 0; i < 3; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(x, y + i * 50));
+            indestructibleWall = new IndestructibleWall(new Position(x, y + i * 50));
             indestructibleWalls.add(indestructibleWall);
         }
 
         x = 1175;
         for (int i = 0; i < 3; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(x, y + i * 50));
+            indestructibleWall = new IndestructibleWall(new Position(x, y + i * 50));
             indestructibleWalls.add(indestructibleWall);
         }
-
-        players = Initialization.initPlayers(tanks);
 
         Water lake;
         x = 425;
         y = 275;
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 10; j++) {
-                lake = Initialization.initWater(new Position(x + j * 50, y + i * 50));
+                lake = new Water(new Position(x + j * 50, y + i * 50));
                 lakes.add(lake);
             }
         }
@@ -432,18 +443,18 @@ public class DrawPanel extends JPanel {
         y = 225;
 
         for (int j = 0; j < 12; j++) {
-            thicket = Initialization.initThickets(new Position(x + j * 50, y));
+            thicket = new Thickets(new Position(x + j * 50, y));
             thickets.add(thicket);
         }
         y = 525;
         for (int j = 0; j < 12; j++) {
-            thicket = Initialization.initThickets(new Position(x + j * 50, y));
+            thicket = new Thickets(new Position(x + j * 50, y));
             thickets.add(thicket);
         }
 
         Turn turn;
-        for (int i = 0; i < 2; i++) {
-            turn = Initialization.initTurn(players.get(i));
+        for (Player value : players) {
+            turn = new Turn(false, value.getTank().getMp().getDirection());
             turns.add(turn);
         }
     }
@@ -452,7 +463,7 @@ public class DrawPanel extends JPanel {
         Thickets thicket;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 3; j++) {
-                thicket = Initialization.initThickets(new Position(x + 50 * j, y + 50 * i));
+                thicket = new Thickets(new Position(x + 50 * j, y + 50 * i));
                 thickets.add(thicket);
             }
         }
@@ -462,7 +473,7 @@ public class DrawPanel extends JPanel {
         Wall wall;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 12; j++) {
-                wall = Initialization.initWall(new Position(x + j * 50, y + i * 50));
+                wall = new Wall(new Position(x + j * 50, y + i * 50));
                 walls.add(wall);
             }
         }

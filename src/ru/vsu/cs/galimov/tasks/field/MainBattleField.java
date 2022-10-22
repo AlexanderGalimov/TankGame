@@ -1,6 +1,5 @@
 package ru.vsu.cs.galimov.tasks.field;
 
-import ru.vsu.cs.galimov.tasks.initialization.Initialization;
 import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
 import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
@@ -14,7 +13,7 @@ import java.util.*;
 
 public class MainBattleField {
     private final char[][] field = new char[11][11];
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
     private final List<Tank> tanks = new ArrayList<>();
     private final Scanner sc = new Scanner(System.in);
     private final List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
@@ -67,7 +66,7 @@ public class MainBattleField {
 
         if (Objects.equals(str, "f")) {
             players.get(numberOfPlayer).getTank().setFire(true);
-            Initialization.setBulletParams(players.get(numberOfPlayer).getTank(), 1);
+            players.get(numberOfPlayer).getTank().shoot();
             return true;
         }
         return !Objects.equals(str, "q");
@@ -77,42 +76,49 @@ public class MainBattleField {
 
         IndestructibleWall indestructibleWall;
         for (int i = 0; i < field[0].length; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(0, i));
+            indestructibleWall = new IndestructibleWall(new Position(0, i));
             indestructibleWalls.add(indestructibleWall);
         }
 
         for (int i = 0; i < field[0].length; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(field.length - 1, i));
+            indestructibleWall = new IndestructibleWall(new Position(field.length - 1, i));
             indestructibleWalls.add(indestructibleWall);
         }
 
         for (int i = 0; i < field.length; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(i, 0));
+            indestructibleWall = new IndestructibleWall(new Position(i, 0));
             indestructibleWalls.add(indestructibleWall);
         }
 
         for (int i = 0; i < field.length; i++) {
-            indestructibleWall = Initialization.initIndestructibleWall(new Position(i, field[0].length - 1));
+            indestructibleWall = new IndestructibleWall(new Position(i, field[0].length - 1));
             indestructibleWalls.add(indestructibleWall);
         }
 
         Wall wall;
         for (int i = 4; i < 8; i++) {
-            wall = Initialization.initWall(new Position(4, i));
+            wall = new Wall(new Position(4, i));
             walls.add(wall);
         }
 
-        Tank tank1 = Initialization.initTank(new Position(5, 5), 1);
+        Tank tank1 = new Tank(new Position(5, 5), new MoveParameters(1));
+        tank1.getMp().setDirection(MoveDirections.UP);
         tanks.add(tank1);
 
-        Tank tank2 = Initialization.initTank(new Position(8, 5), 1);
+        Tank tank2 = new Tank(new Position(8, 5), new MoveParameters(1));
+        tank2.getMp().setDirection(MoveDirections.UP);
         tanks.add(tank2);
 
-        players = Initialization.initPlayers(tanks);
+        Player player;
+        for (Tank tank : tanks) {
+            player = new Player(tank, true);
+            player.getTank().setBullets(new ArrayList<>());
+            players.add(player);
+        }
 
         Turn turn;
-        for (int i = 0; i < 2; i++) {
-            turn = Initialization.initTurn(players.get(i));
+        for (Player value : players) {
+            turn = new Turn(false, value.getTank().getMp().getDirection());
             turns.add(turn);
         }
 
