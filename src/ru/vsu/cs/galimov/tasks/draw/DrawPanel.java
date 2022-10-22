@@ -2,6 +2,7 @@ package ru.vsu.cs.galimov.tasks.draw;
 
 import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
 import ru.vsu.cs.galimov.tasks.logic.Turn;
+import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.*;
 import ru.vsu.cs.galimov.tasks.player.Player;
@@ -13,18 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrawPanel extends JPanel {
-    // todo
     private final Timer timer;
-    private final List<Tank> tanks = new ArrayList<>();
     private final List<Player> players = new ArrayList<>();
-    private final List<Wall> walls = new ArrayList<>();
-    private final List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
-    private final List<Water> lakes = new ArrayList<>();
-    private final List<Thickets> thickets = new ArrayList<>();
+    private final List<BattleFieldObject> tanks = new ArrayList<>();
+    private final List<BattleFieldObject> walls = new ArrayList<>();
+    private final List<BattleFieldObject> indestructibleWalls = new ArrayList<>();
+    private final List<BattleFieldObject> lakes = new ArrayList<>();
+    private final List<BattleFieldObject> thickets = new ArrayList<>();
+    private final List<BattleFieldObject> eagles = new ArrayList<>();
     private final LogicRealization logicRealization = new LogicRealization();
     private final List<Turn> turns = new ArrayList<>();
-    private final List<Eagle> eagles = new ArrayList<>();
-    // todo
     private final int velocity = 50;
 
     public DrawPanel() {
@@ -54,7 +53,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.LEFT);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -velocity, 0, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -velocity, 0, 0);
                     }
                 }
                 update();
@@ -74,7 +73,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.RIGHT);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, velocity, 0, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, velocity, 0, 0);
                     }
                 }
                 update();
@@ -93,7 +92,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.UP);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -velocity, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -velocity, 0);
                     }
                 }
                 update();
@@ -112,7 +111,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.DOWN);
                 } else {
                     if (players.get(0).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, velocity, 0);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, velocity, 0);
                     }
                 }
                 update();
@@ -131,7 +130,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.LEFT);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -velocity, 0, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -velocity, 0, 1);
                     }
                 }
                 update();
@@ -150,7 +149,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.RIGHT);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, velocity, 0, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, velocity, 0, 1);
                     }
                 }
                 update();
@@ -170,7 +169,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.UP);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -velocity, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -velocity, 1);
                     }
                 }
                 update();
@@ -190,7 +189,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.DOWN);
                 } else {
                     if (players.get(1).isCondition()) {
-                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, velocity, 1);
+                        logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, velocity, 1);
                     }
                 }
                 update();
@@ -259,6 +258,18 @@ public class DrawPanel extends JPanel {
         }
     }
 
+    private void drawList(Graphics2D graphics2D, List<BattleFieldObject> list) {
+        for (BattleFieldObject object : list) {
+            if (object instanceof Eagle) {
+                if (((Eagle) object).isAlive()) {
+                    object.draw(graphics2D);
+                }
+            } else {
+                object.draw(graphics2D);
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -270,24 +281,10 @@ public class DrawPanel extends JPanel {
                 player.getTank().draw(g2d);
             }
         }
-
-        for (Eagle eagle : eagles) {
-            if (eagle.isAlive()) {
-                eagle.draw(g2d);
-            }
-        }
-
-        for (Wall wall : walls) {
-            wall.draw(g2d);
-        }
-
-        for (IndestructibleWall indestructibleWall : indestructibleWalls) {
-            indestructibleWall.draw(g2d);
-        }
-
-        for (Water lake : lakes) {
-            lake.draw(g2d);
-        }
+        drawList(g2d, eagles);
+        drawList(g2d, walls);
+        drawList(g2d, indestructibleWalls);
+        drawList(g2d, lakes);
 
         if (timer.isRunning()) {
             for (Player player : players) {
@@ -316,10 +313,7 @@ public class DrawPanel extends JPanel {
                 timer.stop();
             }
         }
-
-        for (Thickets thicket : thickets) {
-            thicket.draw(g2d);
-        }
+        drawList(g2d, thickets);
     }
 
     private void initAllObjects() {
@@ -327,13 +321,13 @@ public class DrawPanel extends JPanel {
         Tank tank1 = new Tank(new Position(75, 125), new MoveParameters(velocity));
         tank1.getMp().setDirection(MoveDirections.RIGHT);
         Tank tank2 = new Tank(new Position(1225, 625), new MoveParameters(velocity));
-        tank1.getMp().setDirection(MoveDirections.LEFT);
+        tank2.getMp().setDirection(MoveDirections.LEFT);
         tanks.add(tank1);
         tanks.add(tank2);
 
         Player player;
-        for (Tank tank : tanks) {
-            player = new Player(tank, true);
+        for (BattleFieldObject tank : tanks) {
+            player = new Player((Tank) tank, true);
             player.getTank().setBullets(new ArrayList<>());
             players.add(player);
         }
@@ -459,7 +453,7 @@ public class DrawPanel extends JPanel {
         }
     }
 
-    private static void makeThicketsBlock(List<Thickets> thickets, int x, int y) {
+    private static void makeThicketsBlock(List<BattleFieldObject> thickets, int x, int y) {
         Thickets thicket;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 3; j++) {

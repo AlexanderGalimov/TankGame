@@ -4,38 +4,25 @@ import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
 import ru.vsu.cs.galimov.tasks.model.movable.*;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Eagle;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
 import java.util.List;
 
 public class LogicRealization implements Destroying, Layering, Moving {
+
     @Override
-    public void checkDestroy(Player player, List<Wall> walls, List<IndestructibleWall> indestructibleWalls, List<Eagle> eagles) {
+    public void checkDestroy(Player player, List<BattleFieldObject> list) {
         for (int i = 0; i < player.getTank().getBullets().size(); i++) {
-            for (int j = 0; j < walls.size(); j++) {
-                if (walls.get(j).destroy(walls.get(j).getPosition(), player.getTank().getBullets().get(i))) {
-                    walls.remove(j);
-                    player.getTank().getBullets().remove(i);
-                    break;
-                }
-            }
-        }
-
-        for (int i = 0; i < player.getTank().getBullets().size(); i++) {
-            for (Eagle eagle : eagles) {
-                if (eagle.destroy(eagle.getPosition(), player.getTank().getBullets().get(i))) {
-                    eagle.setAlive(false);
-                    player.getTank().getBullets().remove(i);
-                    break;
-                }
-            }
-        }
-
-        for (int i = 0; i < player.getTank().getBullets().size(); i++) {
-            for (IndestructibleWall indestructibleWall : indestructibleWalls) {
-                if (player.getTank().getBullets().get(i).destroy(indestructibleWall.getPosition(), player.getTank().getBullets().get(i))) {
+            for (BattleFieldObject object : list) {
+                if (object.intersects(player.getTank().getBullets().get(i).getPosition())) {
+                    if(!(object instanceof IndestructibleWall)){
+                        if (object instanceof Eagle) {
+                            ((Eagle) object).setAlive(false);
+                        }
+                        else {
+                            list.remove(object);
+                        }
+                    }
                     player.getTank().getBullets().remove(i);
                     break;
                 }
@@ -44,7 +31,7 @@ public class LogicRealization implements Destroying, Layering, Moving {
     }
 
     @Override
-    public void checkBulletReachedObject(List<Player> players, List<Wall> walls, List<IndestructibleWall> indestructibleWalls, List<Eagle> eagles, int velocity) {
+    public void checkBulletReachedObject(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> eagles, int velocity) {
         for (Player player : players) {
             if (player.isCondition()) {
                 for (int i = 0; i < player.getTank().getBullets().size(); i++) {
@@ -52,7 +39,9 @@ public class LogicRealization implements Destroying, Layering, Moving {
                         if (checkTankIntersection(player.getTank().getBullets(), i, value)) break;
                     }
                 }
-                checkDestroy(player, walls, indestructibleWalls, eagles);
+                checkDestroy(player, walls);
+                checkDestroy(player, indestructibleWalls);
+                checkDestroy(player, eagles);
             }
         }
 
@@ -86,33 +75,24 @@ public class LogicRealization implements Destroying, Layering, Moving {
         }
     }
 
-    @Override
-    public boolean layering(Tank tank, List<Wall> walls, List<IndestructibleWall> indestructibleWalls, List<Water> lakes, int changeX, int changeY) {
-        for (Wall wall : walls) {
-            if (wall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
+    public boolean layering(Tank tank, List<BattleFieldObject> list, int changeX, int changeY) {
+        for (BattleFieldObject object : list) {
+            if (object.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
                 return true;
             }
         }
-
-        for (IndestructibleWall indestructibleWall : indestructibleWalls) {
-            if (indestructibleWall.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
-            }
-        }
-
-        for (Water lake : lakes) {
-            if (lake.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
-            }
-        }
-
         return false;
     }
 
+
     @Override
-    public void checkLayering(List<Player> players, List<Wall> walls, List<IndestructibleWall> indestructibleWalls, List<Water> lakes, MoveDirections direction, int changeX, int changeY, int numberOfPlayer) {
+    public void checkLayering(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> lakes, List<BattleFieldObject> eagles, MoveDirections direction, int changeX, int changeY, int numberOfPlayer) {
         for (int j = 0; j < players.size(); j++) {
-            if (!layering(players.get(numberOfPlayer).getTank(), walls, indestructibleWalls, lakes, changeX, changeY) && !pairTankLayering(players.get(numberOfPlayer), players.get(j), changeX, changeY) && numberOfPlayer != j) {
+            if (!layering(players.get(numberOfPlayer).getTank(), walls, changeX, changeY)
+                    && !layering(players.get(numberOfPlayer).getTank(), indestructibleWalls, changeX, changeY)
+                    && !layering(players.get(numberOfPlayer).getTank(), lakes, changeX, changeY)
+                    && !layering(players.get(numberOfPlayer).getTank(), eagles, changeX, changeY)
+                    && !pairTankLayering(players.get(numberOfPlayer), players.get(j), changeX, changeY) && numberOfPlayer != j) {
                 moveTank(players.get(numberOfPlayer), direction);
             }
         }

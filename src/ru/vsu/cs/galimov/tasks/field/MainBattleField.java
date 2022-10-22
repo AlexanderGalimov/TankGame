@@ -2,26 +2,31 @@ package ru.vsu.cs.galimov.tasks.field;
 
 import ru.vsu.cs.galimov.tasks.logic.LogicRealization;
 import ru.vsu.cs.galimov.tasks.logic.Turn;
-import ru.vsu.cs.galimov.tasks.model.movable.*;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Eagle;
+import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
+import ru.vsu.cs.galimov.tasks.model.movable.MoveDirections;
+import ru.vsu.cs.galimov.tasks.model.movable.MoveParameters;
+import ru.vsu.cs.galimov.tasks.model.movable.Position;
+import ru.vsu.cs.galimov.tasks.model.movable.Tank;
 import ru.vsu.cs.galimov.tasks.model.staticObject.IndestructibleWall;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Wall;
-import ru.vsu.cs.galimov.tasks.model.staticObject.Water;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class MainBattleField {
     private final char[][] field = new char[11][11];
     private final List<Player> players = new ArrayList<>();
-    private final List<Tank> tanks = new ArrayList<>();
-    private final Scanner sc = new Scanner(System.in);
-    private final List<IndestructibleWall> indestructibleWalls = new ArrayList<>();
-    private final List<Wall> walls = new ArrayList<>();
-    private final List<Water> lakes = new ArrayList<>();
+    private final List<BattleFieldObject> tanks = new ArrayList<>();
+    private final List<BattleFieldObject> indestructibleWalls = new ArrayList<>();
+    private final List<BattleFieldObject> walls = new ArrayList<>();
+    private final List<BattleFieldObject> lakes = new ArrayList<>();
+    private final List<BattleFieldObject> eagles = new ArrayList<>();
     private final LogicRealization logicRealization = new LogicRealization();
     private final List<Turn> turns = new ArrayList<>();
-    private final List<Eagle> eagles = new ArrayList<>();
+    private final Scanner sc = new Scanner(System.in);
 
     private boolean inputKey(int numberOfPlayer) {
         System.out.println("player" + " " + (numberOfPlayer + 1));
@@ -32,7 +37,7 @@ public class MainBattleField {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.UP);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.UP);
             } else {
-                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.UP, 0, -1, numberOfPlayer);
+                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -1, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "s")) {
@@ -41,7 +46,7 @@ public class MainBattleField {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.DOWN);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.DOWN);
             } else {
-                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.DOWN, 0, 1, numberOfPlayer);
+                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, 1, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "a")) {
@@ -50,7 +55,7 @@ public class MainBattleField {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.LEFT);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.LEFT);
             } else {
-                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.LEFT, -1, 0, numberOfPlayer);
+                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -1, 0, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "d")) {
@@ -59,7 +64,7 @@ public class MainBattleField {
                 logicRealization.turnTank(players.get(numberOfPlayer), MoveDirections.RIGHT);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.RIGHT);
             } else {
-                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, MoveDirections.RIGHT, 1, 0, numberOfPlayer);
+                logicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, 1, 0, numberOfPlayer);
             }
             return true;
         }
@@ -110,8 +115,8 @@ public class MainBattleField {
         tanks.add(tank2);
 
         Player player;
-        for (Tank tank : tanks) {
-            player = new Player(tank, true);
+        for (BattleFieldObject tank : tanks) {
+            player = new Player((Tank) tank, true);
             player.getTank().setBullets(new ArrayList<>());
             players.add(player);
         }
@@ -171,11 +176,11 @@ public class MainBattleField {
             }
         }
 
-        for (IndestructibleWall indestructibleWall : indestructibleWalls) {
+        for (BattleFieldObject indestructibleWall : indestructibleWalls) {
             field[indestructibleWall.getPosition().y()][indestructibleWall.getPosition().x()] = 'D';
         }
 
-        for (Wall currentWall : walls) {
+        for (BattleFieldObject currentWall : walls) {
             field[currentWall.getPosition().y()][currentWall.getPosition().x()] = 'W';
         }
 
