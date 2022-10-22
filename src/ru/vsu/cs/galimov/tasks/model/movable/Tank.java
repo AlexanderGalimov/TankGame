@@ -1,13 +1,12 @@
 package ru.vsu.cs.galimov.tasks.model.movable;
 
 import ru.vsu.cs.galimov.tasks.draw.DrawUtils;
-import ru.vsu.cs.galimov.tasks.model.Destroyable;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tank extends MovableObject implements Destroyable {
+public class Tank extends MovableObject{
     private boolean isFire = false;
     private List<Bullet> bullets = new ArrayList<>();
 
@@ -48,5 +47,9 @@ public class Tank extends MovableObject implements Destroyable {
     @Override
     public void draw(Graphics2D graphics2D) {
         DrawUtils.drawTank(graphics2D, this);
+    }
+
+    public void turn(MoveDirections direction) {
+        this.getMp().setDirection(direction);
     }
 }

@@ -3,11 +3,10 @@ package ru.vsu.cs.galimov.tasks.model.staticObject;
 import ru.vsu.cs.galimov.tasks.draw.DrawUtils;
 import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
 import ru.vsu.cs.galimov.tasks.model.movable.Position;
-import ru.vsu.cs.galimov.tasks.model.Destroyable;
 
 import java.awt.*;
 
-public class Wall extends BattleFieldObject implements Destroyable {
+public class Wall extends BattleFieldObject{
 
     public Wall(Position position) {
         super(position);

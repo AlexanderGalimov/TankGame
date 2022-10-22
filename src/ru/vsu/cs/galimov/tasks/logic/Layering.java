@@ -15,5 +15,4 @@ public interface Layering {
 
     boolean pairTankLayering(Player player1, Player player2, int changeX, int changeY);
 
-    boolean checkTankIntersection(List<Bullet> bullets, int indexPlayer, Player player);
 }
