@@ -36,7 +36,9 @@ public class DestroyingLogicRealization implements Destroying {
             if (player.isCondition()) {
                 for (int i = 0; i < player.getTank().getBullets().size(); i++) {
                     for (Player value : players) {
-                        if (checkTankIntersection(player.getTank().getBullets(), i, value)) break;
+                        if (!player.equals(value) && checkTankIntersection(player.getTank().getBullets(), i, value)){
+                            break;
+                        }
                     }
                 }
                 checkDestroy(player, walls);
@@ -60,12 +62,12 @@ public class DestroyingLogicRealization implements Destroying {
             for (int j = 0; j < player2.getTank().getBullets().size(); j++) {
                 if (player1.isCondition()) {
                     if (player1.getTank().getBullets().get(i).intersects(player2.getTank().getBullets().get(j).getPosition())
-                            || (((player1.getTank().getBullets().get(i).intersects(new Position(player2.getTank().getBullets().get(j).getPosition().x() + player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y()))
+                            || ((((player1.getTank().getBullets().get(i).intersects(new Position(player2.getTank().getBullets().get(j).getPosition().x() + player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y()))
                             && player1.getTank().getBullets().get(i).intersects(new Position(player2.getTank().getBullets().get(j).getPosition().x() - player2.getTank().getBullets().get(j).getMp().getVelocity(), player2.getTank().getBullets().get(j).getPosition().y())))
                             && player1.getTank().getBullets().get(i).getPosition().y() == player2.getTank().getBullets().get(j).getPosition().y())
                             || ((player1.getTank().getBullets().get(i).intersects(new Position(player2.getTank().getBullets().get(j).getPosition().x(), player2.getTank().getBullets().get(j).getPosition().y() + player2.getTank().getBullets().get(j).getMp().getVelocity()))
                             && player1.getTank().getBullets().get(i).intersects(new Position(player2.getTank().getBullets().get(j).getPosition().x(), player2.getTank().getBullets().get(j).getPosition().y() - player2.getTank().getBullets().get(j).getMp().getVelocity())))
-                            && player1.getTank().getBullets().get(i).getPosition().x() == player2.getTank().getBullets().get(j).getPosition().x()))) {
+                            && player1.getTank().getBullets().get(i).getPosition().x() == player2.getTank().getBullets().get(j).getPosition().x())))) {
                         player1.getTank().getBullets().remove(i);
                         player2.getTank().getBullets().remove(j);
                         break;
