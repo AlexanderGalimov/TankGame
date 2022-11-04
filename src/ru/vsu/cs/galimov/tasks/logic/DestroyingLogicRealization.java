@@ -12,7 +12,7 @@ import java.util.List;
 public class DestroyingLogicRealization implements Destroying {
 
     @Override
-    public void checkDestroy(Player player, List<BattleFieldObject> objects) {
+    public void destroySeparatedObjects(Player player, List<BattleFieldObject> objects) {
         for (int i = 0; i < player.getTank().getBullets().size(); i++) {
             for (BattleFieldObject object : objects) {
                 if (object.intersects(player.getTank().getBullets().get(i).getPosition())) {
@@ -31,33 +31,33 @@ public class DestroyingLogicRealization implements Destroying {
     }
 
     @Override
-    public void checkBulletReachedObject(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> eagles, int velocity) {
+    public void destroyObjectsByBullet(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> eagles, int velocity) {
         for (Player player : players) {
             if (player.isCondition()) {
                 for (int i = 0; i < player.getTank().getBullets().size(); i++) {
                     for (Player value : players) {
-                        if (!player.equals(value) && checkTankIntersection(player.getTank().getBullets(), i, value)){
+                        if (!player.equals(value) && checkTankIntersectsBullet(player.getTank().getBullets(), i, value)){
                             break;
                         }
                     }
                 }
-                checkDestroy(player, walls);
-                checkDestroy(player, indestructibleWalls);
-                checkDestroy(player, eagles);
+                destroySeparatedObjects(player, walls);
+                destroySeparatedObjects(player, indestructibleWalls);
+                destroySeparatedObjects(player, eagles);
             }
         }
 
         for (int i = 0; i < players.size(); i++) {
             for (int j = 0; j < players.size(); j++) {
                 if (i != j) {
-                    checkDestroyForBullets(players.get(i), players.get(j), velocity);
+                    destroyBulletsByCollision(players.get(i), players.get(j), velocity);
                 }
             }
         }
     }
 
     @Override
-    public void checkDestroyForBullets(Player player1, Player player2, int velocity) {
+    public void destroyBulletsByCollision(Player player1, Player player2, int velocity) {
         for (int i = 0; i < player1.getTank().getBullets().size(); i++) {
             for (int j = 0; j < player2.getTank().getBullets().size(); j++) {
                 if (player1.isCondition()) {
@@ -78,7 +78,7 @@ public class DestroyingLogicRealization implements Destroying {
     }
 
     @Override
-    public boolean checkTankIntersection(List<Bullet> bullets, int indexPlayer, Player player) {
+    public boolean checkTankIntersectsBullet(List<Bullet> bullets, int indexPlayer, Player player) {
         if (player.isCondition()) {
             if (player.getTank().intersects(bullets.get(indexPlayer).getPosition())) {
                 player.setCondition(false);

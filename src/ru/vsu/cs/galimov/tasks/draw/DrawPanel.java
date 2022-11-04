@@ -32,6 +32,7 @@ public class DrawPanel extends JPanel {
     private final LayeringLogicRealization layeringLogicRealization = new LayeringLogicRealization();
     private final List<Turn> turns = new ArrayList<>();
     private final int velocity = 50;
+    private final JButton button = new JButton();
 
     public DrawPanel() {
 
@@ -68,7 +69,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.LEFT);
                 } else {
                     if (players.get(0).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -velocity, 0, 0);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -velocity, 0, 0);
                     }
                 }
                 update();
@@ -88,7 +89,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.RIGHT);
                 } else {
                     if (players.get(0).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, velocity, 0, 0);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, velocity, 0, 0);
                     }
                 }
                 update();
@@ -107,7 +108,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.UP);
                 } else {
                     if (players.get(0).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -velocity, 0);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -velocity, 0);
                     }
                 }
                 update();
@@ -126,7 +127,7 @@ public class DrawPanel extends JPanel {
                     turns.get(0).setDirection(MoveDirections.DOWN);
                 } else {
                     if (players.get(0).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, velocity, 0);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, velocity, 0);
                     }
                 }
                 update();
@@ -145,7 +146,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.LEFT);
                 } else {
                     if (players.get(1).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -velocity, 0, 1);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT, -velocity, 0, 1);
                     }
                 }
                 update();
@@ -164,7 +165,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.RIGHT);
                 } else {
                     if (players.get(1).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, velocity, 0, 1);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, velocity, 0, 1);
                     }
                 }
                 update();
@@ -184,7 +185,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.UP);
                 } else {
                     if (players.get(1).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -velocity, 1);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -velocity, 1);
                     }
                 }
                 update();
@@ -204,7 +205,7 @@ public class DrawPanel extends JPanel {
                     turns.get(1).setDirection(MoveDirections.DOWN);
                 } else {
                     if (players.get(1).isCondition()) {
-                        layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, velocity, 1);
+                        layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, velocity, 1);
                     }
                 }
                 update();
@@ -253,6 +254,38 @@ public class DrawPanel extends JPanel {
         this.revalidate();
     }
 
+    private void restart() {
+        players.clear();
+        tanks.clear();
+        walls.clear();
+        indestructibleWalls.clear();
+        lakes.clear();
+        thickets.clear();
+        eagles.clear();
+        this.initAllObjects();
+        this.repaint();
+    }
+
+    private void valid() {
+        this.repaint();
+        button.setText("restart");
+        button.setSize(100, 50);
+        button.setLocation(600, 0);
+        button.setVisible(false);
+
+        button.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restart();
+                button.setVisible(false);
+            }
+        });
+        add(button);
+
+        button.setVisible(true);
+        this.repaint();
+    }
+
     private void drawGrid(Graphics2D g) {
         g.setColor(Color.LIGHT_GRAY);
 
@@ -291,6 +324,17 @@ public class DrawPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         drawGrid(g2d);
 
+        for (BattleFieldObject eagle : eagles) {
+            if (!(((Eagle) eagle).isAlive())) {
+                for (Player player : players) {
+                    player.setCondition(false);
+                }
+                update();
+                valid();
+                break;
+            }
+        }
+
         for (Player player : players) {
             if (player.isCondition()) {
                 player.getTank().draw(g2d);
@@ -314,7 +358,7 @@ public class DrawPanel extends JPanel {
                 }
             }
 
-            destroyingLogicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, velocity);
+            destroyingLogicRealization.destroyObjectsByBullet(players, walls, indestructibleWalls, eagles, velocity);
             update();
 
             boolean flag = false;

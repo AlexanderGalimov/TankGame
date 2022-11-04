@@ -11,23 +11,22 @@ import java.util.List;
 public class LayeringLogicRealization implements Layering {
 
     @Override
-    public boolean layering(Tank tank, List<BattleFieldObject> list, int changeX, int changeY) {
+    public boolean isLayering(Tank tank, List<BattleFieldObject> list, int changeX, int changeY) {
         for (BattleFieldObject object : list) {
             if (object.intersects(new Position(tank.getPosition().x() + changeX, tank.getPosition().y() + changeY))) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
-
     @Override
-    public void checkLayering(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> lakes, List<BattleFieldObject> eagles, MoveDirections direction, int changeX, int changeY, int numberOfPlayer) {
+    public void moveInViewOfLayering(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> lakes, List<BattleFieldObject> eagles, MoveDirections direction, int changeX, int changeY, int numberOfPlayer) {
         for (int j = 0; j < players.size(); j++) {
-            if (!layering(players.get(numberOfPlayer).getTank(), walls, changeX, changeY)
-                    && !layering(players.get(numberOfPlayer).getTank(), indestructibleWalls, changeX, changeY)
-                    && !layering(players.get(numberOfPlayer).getTank(), lakes, changeX, changeY)
-                    && !layering(players.get(numberOfPlayer).getTank(), eagles, changeX, changeY)
+            if (isLayering(players.get(numberOfPlayer).getTank(), walls, changeX, changeY)
+                    && isLayering(players.get(numberOfPlayer).getTank(), indestructibleWalls, changeX, changeY)
+                    && isLayering(players.get(numberOfPlayer).getTank(), lakes, changeX, changeY)
+                    && isLayering(players.get(numberOfPlayer).getTank(), eagles, changeX, changeY)
                     && !pairTankLayering(players.get(numberOfPlayer), players.get(j), changeX, changeY) && numberOfPlayer != j) {
                 players.get(numberOfPlayer).getTank().move();
             }

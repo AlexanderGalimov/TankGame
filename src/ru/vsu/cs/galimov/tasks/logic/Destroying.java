@@ -7,12 +7,12 @@ import ru.vsu.cs.galimov.tasks.player.Player;
 import java.util.List;
 
 public interface Destroying {
-    void checkDestroy(Player player, List<BattleFieldObject> objects);
+    void destroySeparatedObjects(Player player, List<BattleFieldObject> objects);
 
-    void checkBulletReachedObject(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> eagles, int velocity);
+    void destroyObjectsByBullet(List<Player> players, List<BattleFieldObject> walls, List<BattleFieldObject> indestructibleWalls, List<BattleFieldObject> eagles, int velocity);
 
-    void checkDestroyForBullets(Player player1, Player player2, int velocity);
+    void destroyBulletsByCollision(Player player1, Player player2, int velocity);
 
-    boolean checkTankIntersection(List<Bullet> bullets, int indexPlayer, Player player);
+    boolean checkTankIntersectsBullet(List<Bullet> bullets, int indexPlayer, Player player);
 
 }

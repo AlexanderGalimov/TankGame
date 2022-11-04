@@ -39,7 +39,7 @@ public class MainBattleField {
                 players.get(numberOfPlayer).getTank().turn(MoveDirections.UP);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.UP);
             } else {
-                layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -1, numberOfPlayer);
+                layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.UP, 0, -1, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "s")) {
@@ -48,7 +48,7 @@ public class MainBattleField {
                 players.get(numberOfPlayer).getTank().turn(MoveDirections.DOWN);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.DOWN);
             } else {
-                layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, 1, numberOfPlayer);
+                layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.DOWN, 0, 1, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "a")) {
@@ -57,7 +57,7 @@ public class MainBattleField {
                 players.get(numberOfPlayer).getTank().turn(MoveDirections.LEFT);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.LEFT);
             } else {
-                layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT,-1, 0, numberOfPlayer);
+                layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.LEFT,-1, 0, numberOfPlayer);
             }
             return true;
         } else if (Objects.equals(str, "d")) {
@@ -66,7 +66,7 @@ public class MainBattleField {
                 players.get(numberOfPlayer).getTank().turn(MoveDirections.RIGHT);
                 turns.get(numberOfPlayer).setDirection(MoveDirections.RIGHT);
             } else {
-                layeringLogicRealization.checkLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, 1, 0, numberOfPlayer);
+                layeringLogicRealization.moveInViewOfLayering(players, walls, indestructibleWalls, lakes, eagles, MoveDirections.RIGHT, 1, 0, numberOfPlayer);
             }
             return true;
         }
@@ -158,10 +158,10 @@ public class MainBattleField {
             if (tank.getBullets().size() != 0) {
                 for (int i = 0; i < tank.getBullets().size(); i++) {
                     int size = tank.getBullets().size();
-                    destroyingLogicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, 1);
+                    destroyingLogicRealization.destroyObjectsByBullet(players, walls, indestructibleWalls, eagles, 1);
                     while (size == tank.getBullets().size()) {
                         tank.getBullets().get(i).move();
-                        destroyingLogicRealization.checkBulletReachedObject(players, walls, indestructibleWalls, eagles, 1);
+                        destroyingLogicRealization.destroyObjectsByBullet(players, walls, indestructibleWalls, eagles, 1);
                     }
                 }
             }

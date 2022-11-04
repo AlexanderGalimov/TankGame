@@ -6,7 +6,7 @@ import ru.vsu.cs.galimov.tasks.model.movable.Position;
 
 import java.awt.*;
 
-public class Eagle extends BattleFieldObject{
+public class Eagle extends BattleFieldObject {
     private boolean isAlive = true;
 
     public Eagle(Position position) {
