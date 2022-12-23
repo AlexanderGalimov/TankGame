@@ -1,7 +1,7 @@
 package ru.vsu.cs.galimov.tasks;
 
 import ru.vsu.cs.galimov.tasks.draw.MainWindow;
-import ru.vsu.cs.galimov.tasks.field.MainBattleField;
+import ru.vsu.cs.galimov.tasks.field.ConsoleField;
 
 import java.util.Scanner;
 
@@ -12,7 +12,7 @@ public class Main {
         System.out.println("Выберите режим использования(1 - консоль, 2 - интерфейс): ");
         String str = scanner.next();
         if("1".equals(str)){
-            MainBattleField field = new MainBattleField();
+            ConsoleField field = new ConsoleField();
             field.initializeGame();
         }
         else if("2".equals(str)){

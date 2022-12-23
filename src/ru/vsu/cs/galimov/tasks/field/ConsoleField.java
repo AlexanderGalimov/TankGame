@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class MainBattleField {
+public class ConsoleField {
     private final char[][] field = new char[11][11];
     private final List<Player> players = new ArrayList<>();
     private final List<BattleFieldObject> tanks = new ArrayList<>();
@@ -31,8 +31,9 @@ public class MainBattleField {
     private final Scanner sc = new Scanner(System.in);
 
     private boolean inputKey(int numberOfPlayer) {
-        System.out.println("player" + " " + (numberOfPlayer + 1));
-        String str = sc.next();
+        System.out.println("player's" + " " + (numberOfPlayer + 1) + " action");
+        String str;
+        str = sc.next();
         if (Objects.equals(str, "w")) {
             turns.get(numberOfPlayer).setTurned(turns.get(numberOfPlayer).getDirection() == MoveDirections.UP);
             if (!turns.get(numberOfPlayer).isTurned()) {
