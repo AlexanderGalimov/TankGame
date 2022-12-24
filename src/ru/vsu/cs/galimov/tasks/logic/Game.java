@@ -215,7 +215,7 @@ public class Game{
         eagles.clear();
     }
 
-    public void timerRunning(int indexOfPlayer,int indexOfCurrBullet){
+    public void timerBulletRunning(int indexOfPlayer, int indexOfCurrBullet){
         players.get(indexOfPlayer).getTank().getBullets().get(indexOfCurrBullet).move();
     }
 

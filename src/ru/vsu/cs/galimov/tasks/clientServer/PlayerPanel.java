@@ -29,7 +29,7 @@ public class PlayerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < game.getPlayers().get(indexOfPlayer).getTank().getBullets().size(); i++) {
-                    game.timerRunning(indexOfPlayer,i);
+                    game.timerBulletRunning(indexOfPlayer,i);
                     update();
                 }
             }

@@ -1,5 +1,6 @@
 package ru.vsu.cs.galimov.tasks.field;
 
+import ru.vsu.cs.galimov.tasks.clientServer.BattleMapPanel;
 import ru.vsu.cs.galimov.tasks.logic.Game;
 import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
@@ -50,14 +51,7 @@ public class BattleMapConsole {
 
         Tank tank2 = new Tank(new Position(8, 5), new MoveParameters(1));
         tank2.getMp().setDirection(MoveDirections.UP);
-        game.getTanks().add(tank2);
-
-        Player player;
-        for (BattleFieldObject tank : game.getTanks()) {
-            player = new Player((Tank) tank, true);
-            player.getTank().setBullets(new ArrayList<>());
-            game.getPlayers().add(player);
-        }
+        BattleMapPanel.setTanks(game, tank2);
 
         Turn turn;
         for (Player value : game.getPlayers()) {

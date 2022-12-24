@@ -22,14 +22,7 @@ public class BattleMapPanel {
         Tank tank2 = new Tank(new Position(1225, 625), new MoveParameters(game.getVelocity()));
         tank2.getMp().setDirection(MoveDirections.LEFT);
         game.getTanks().add(tank1);
-        game.getTanks().add(tank2);
-
-        Player player;
-        for (BattleFieldObject tank : game.getTanks()) {
-            player = new Player((Tank) tank, true);
-            player.getTank().setBullets(new ArrayList<>());
-            game.getPlayers().add(player);
-        }
+        setTanks(game, tank2);
 
         Eagle eagle1 = new Eagle(new Position(75, 375));
         Eagle eagle2 = new Eagle(new Position(1225, 375));
@@ -149,6 +142,17 @@ public class BattleMapPanel {
         for (Player value : game.getPlayers()) {
             turn = new Turn(false, value.getTank().getMp().getDirection());
             game.getTurns().add(turn);
+        }
+    }
+
+    public static void setTanks(Game game, Tank tank2) {
+        game.getTanks().add(tank2);
+
+        Player player;
+        for (BattleFieldObject tank : game.getTanks()) {
+            player = new Player((Tank) tank, true);
+            player.getTank().setBullets(new ArrayList<>());
+            game.getPlayers().add(player);
         }
     }
 
