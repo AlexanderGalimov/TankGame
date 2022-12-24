@@ -11,8 +11,8 @@ public class MainWindow extends JFrame {
     public MainWindow() throws HeadlessException {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1300, 1000);
-
-        DrawPanel mainPanel = new DrawPanel();
+        Game game = new Game();
+        DrawPanel mainPanel = new DrawPanel(game);
         mainPanel.setFocusable(true);
         requestFocus();
         this.add(mainPanel);

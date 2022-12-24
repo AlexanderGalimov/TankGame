@@ -1,25 +1,21 @@
 package ru.vsu.cs.galimov.tasks.clientServer;
 
 import ru.vsu.cs.galimov.tasks.logic.Game;
-import ru.vsu.cs.galimov.tasks.logic.Turn;
 import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
-import ru.vsu.cs.galimov.tasks.model.movable.MoveDirections;
-import ru.vsu.cs.galimov.tasks.model.staticObject.*;
+import ru.vsu.cs.galimov.tasks.model.staticObject.Eagle;
 import ru.vsu.cs.galimov.tasks.player.Player;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class PlayerPanel extends JPanel {
     private final Timer timer;
-    private final List<Turn> turns = new ArrayList<>();
-    private final int velocity = 50;
+
     private final JButton button = new JButton();
     private final Game game;
     private Queue<String> actions = new LinkedList<>();
@@ -27,13 +23,13 @@ public class PlayerPanel extends JPanel {
     public PlayerPanel(Game game, int indexOfPlayer) {
         this.game = game;
 
-        BattleMap.initAllObjects(game, turns,velocity);
+        BattleMapPanel.initAllObjects(game);
 
         timer = new Timer(125, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < game.getPlayers().get(indexOfPlayer).getTank().getBullets().size(); i++) {
-                    game.getPlayers().get(indexOfPlayer).getTank().getBullets().get(i).move();
+                    game.timerRunning(indexOfPlayer,i);
                     update();
                 }
             }
@@ -44,15 +40,6 @@ public class PlayerPanel extends JPanel {
         Action leftSp = new AbstractAction(LEFT) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.LEFT);
-                if (!turns.get(indexOfPlayer).isTurned()) {
-                    game.getPlayers().get(indexOfPlayer).getTank().turn(MoveDirections.LEFT);
-                    turns.get(indexOfPlayer).setDirection(MoveDirections.LEFT);
-                } else {
-                    if (game.getPlayers().get(indexOfPlayer).isCondition()) {
-                        game.moveInViewOfLayering(-velocity, 0, indexOfPlayer);
-                    }
-                }
                 actions.add(LEFT);
                 update();
             }
@@ -63,15 +50,6 @@ public class PlayerPanel extends JPanel {
         Action rightSp = new AbstractAction(RIGHT) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.RIGHT);
-                if (!turns.get(indexOfPlayer).isTurned()) {
-                    game.getPlayers().get(indexOfPlayer).getTank().turn(MoveDirections.RIGHT);
-                    turns.get(indexOfPlayer).setDirection(MoveDirections.RIGHT);
-                } else {
-                    if (game.getPlayers().get(indexOfPlayer).isCondition()) {
-                        game.moveInViewOfLayering(velocity, 0, indexOfPlayer);
-                    }
-                }
                 actions.add(RIGHT);
                 update();
             }
@@ -83,16 +61,6 @@ public class PlayerPanel extends JPanel {
         Action upSp = new AbstractAction(UP) {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.UP);
-                if (!turns.get(indexOfPlayer).isTurned()) {
-                    game.getPlayers().get(indexOfPlayer).getTank().turn(MoveDirections.UP);
-                    turns.get(indexOfPlayer).setDirection(MoveDirections.UP);
-                } else {
-                    if (game.getPlayers().get(indexOfPlayer).isCondition()) {
-                        game.moveInViewOfLayering(0, -velocity, indexOfPlayer);
-                    }
-                }
                 actions.add(UP);
                 update();
             }
@@ -104,16 +72,6 @@ public class PlayerPanel extends JPanel {
         Action downSp = new AbstractAction(DOWN) {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.DOWN);
-                if (!turns.get(indexOfPlayer).isTurned()) {
-                    game.getPlayers().get(indexOfPlayer).getTank().turn(MoveDirections.DOWN);
-                    turns.get(indexOfPlayer).setDirection(MoveDirections.DOWN);
-                } else {
-                    if (game.getPlayers().get(indexOfPlayer).isCondition()) {
-                        game.moveInViewOfLayering(0, velocity, indexOfPlayer);
-                    }
-                }
                 actions.add(DOWN);
                 update();
             }
@@ -126,7 +84,7 @@ public class PlayerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (game.getPlayers().get(indexOfPlayer).isCondition()) {
-                    game.getPlayers().get(indexOfPlayer).getTank().shoot();
+                    game.fireButton(indexOfPlayer);
                     update();
                     if (!timer.isRunning()) {
                         timer.start();
@@ -146,7 +104,7 @@ public class PlayerPanel extends JPanel {
 
     private void restart() {
         game.restart();
-        BattleMap.initAllObjects(game, turns,velocity);
+        BattleMapPanel.initAllObjects(game);
         this.repaint();
     }
 
@@ -173,19 +131,19 @@ public class PlayerPanel extends JPanel {
     private void drawGrid(Graphics2D g) {
         g.setColor(Color.LIGHT_GRAY);
 
-        for (int x = 650; x < 1300; x += velocity) {
+        for (int x = 650; x < 1300; x += game.getVelocity()) {
             g.drawLine(x, 0, x, 1000);
         }
 
-        for (int x = 650; x > 0; x -= velocity) {
+        for (int x = 650; x > 0; x -= game.getVelocity()) {
             g.drawLine(x, 0, x, 1000);
         }
 
-        for (int y = 500; y < getHeight(); y += velocity) {
+        for (int y = 500; y < getHeight(); y += game.getVelocity()) {
             g.drawLine(0, y, 1300, y);
         }
 
-        for (int y = 500; y > 0; y -= velocity) {
+        for (int y = 500; y > 0; y -= game.getVelocity()) {
             g.drawLine(0, y, 1300, y);
         }
     }

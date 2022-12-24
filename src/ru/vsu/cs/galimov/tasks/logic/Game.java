@@ -2,6 +2,7 @@ package ru.vsu.cs.galimov.tasks.logic;
 
 import ru.vsu.cs.galimov.tasks.model.BattleFieldObject;
 import ru.vsu.cs.galimov.tasks.model.movable.Bullet;
+import ru.vsu.cs.galimov.tasks.model.movable.MoveDirections;
 import ru.vsu.cs.galimov.tasks.model.movable.Position;
 import ru.vsu.cs.galimov.tasks.model.movable.Tank;
 import ru.vsu.cs.galimov.tasks.model.staticObject.Eagle;
@@ -19,7 +20,21 @@ public class Game{
     private List<BattleFieldObject> lakes = new ArrayList<>();
     private List<BattleFieldObject> thickets = new ArrayList<>();
     private List<BattleFieldObject> eagles = new ArrayList<>();
+    private List<Turn> turns = new ArrayList<>();
+    private final int velocity = 50;
     private boolean condition;
+
+    public List<Turn> getTurns() {
+        return turns;
+    }
+
+    public void setTurns(List<Turn> turns) {
+        this.turns = turns;
+    }
+
+    public int getVelocity() {
+        return velocity;
+    }
 
     public boolean isCondition() {
         return condition;
@@ -198,6 +213,62 @@ public class Game{
         lakes.clear();
         thickets.clear();
         eagles.clear();
+    }
+
+    public void timerRunning(int indexOfPlayer,int indexOfCurrBullet){
+        players.get(indexOfPlayer).getTank().getBullets().get(indexOfCurrBullet).move();
+    }
+
+    public void leftButton(int indexOfPlayer){
+        turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.LEFT);
+        if (!turns.get(indexOfPlayer).isTurned()) {
+            players.get(indexOfPlayer).getTank().turn(MoveDirections.LEFT);
+            turns.get(indexOfPlayer).setDirection(MoveDirections.LEFT);
+        } else {
+            if (players.get(indexOfPlayer).isCondition()) {
+                moveInViewOfLayering(-velocity, 0, indexOfPlayer);
+            }
+        }
+    }
+
+    public void rightButton(int indexOfPlayer){
+        turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.RIGHT);
+        if (!turns.get(indexOfPlayer).isTurned()) {
+            players.get(indexOfPlayer).getTank().turn(MoveDirections.RIGHT);
+            turns.get(indexOfPlayer).setDirection(MoveDirections.RIGHT);
+        } else {
+            if (players.get(indexOfPlayer).isCondition()) {
+                moveInViewOfLayering(velocity, 0, indexOfPlayer);
+            }
+        }
+    }
+
+    public void upButton(int indexOfPlayer){
+        turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.UP);
+        if (!turns.get(indexOfPlayer).isTurned()) {
+            players.get(indexOfPlayer).getTank().turn(MoveDirections.UP);
+            turns.get(indexOfPlayer).setDirection(MoveDirections.UP);
+        } else {
+            if (players.get(indexOfPlayer).isCondition()) {
+                moveInViewOfLayering(0, -velocity, indexOfPlayer);
+            }
+        }
+    }
+
+    public void downButton(int indexOfPlayer){
+        turns.get(indexOfPlayer).setTurned(turns.get(indexOfPlayer).getDirection() == MoveDirections.DOWN);
+        if (!turns.get(indexOfPlayer).isTurned()) {
+            players.get(indexOfPlayer).getTank().turn(MoveDirections.DOWN);
+            turns.get(indexOfPlayer).setDirection(MoveDirections.DOWN);
+        } else {
+            if (players.get(indexOfPlayer).isCondition()) {
+                moveInViewOfLayering(0, velocity, indexOfPlayer);
+            }
+        }
+    }
+
+    public void fireButton(int indexOfPlayer){
+        players.get(indexOfPlayer).getTank().shoot();
     }
 
 }

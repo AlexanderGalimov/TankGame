@@ -7,11 +7,13 @@ import java.net.Socket;
 
 public class GameSession implements Runnable{
     private final Game game;
+    MainWindow mainWindowPlayer1;
+    MainWindow mainWindowPlayer2;
 
     public GameSession(Socket socket){
         game = new Game();
-        MainWindow mainWindowPlayer1 = new MainWindow(game, 0);
-        MainWindow mainWindowPlayer2 = new MainWindow(game, 1);
+        mainWindowPlayer1 = new MainWindow(game, 0);
+        mainWindowPlayer2 = new MainWindow(game, 1);
         mainWindowPlayer1.setVisible(true);
         mainWindowPlayer2.setVisible(true);
     }

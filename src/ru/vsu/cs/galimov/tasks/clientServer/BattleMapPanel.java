@@ -13,13 +13,13 @@ import ru.vsu.cs.galimov.tasks.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BattleMap {
+public class BattleMapPanel {
 
-    public static void initAllObjects(Game game, List<Turn> turns, int velocity) {
+    public static void initAllObjects(Game game) {
 
-        Tank tank1 = new Tank(new Position(75, 125), new MoveParameters(velocity));
+        Tank tank1 = new Tank(new Position(75, 125), new MoveParameters(game.getVelocity()));
         tank1.getMp().setDirection(MoveDirections.RIGHT);
-        Tank tank2 = new Tank(new Position(1225, 625), new MoveParameters(velocity));
+        Tank tank2 = new Tank(new Position(1225, 625), new MoveParameters(game.getVelocity()));
         tank2.getMp().setDirection(MoveDirections.LEFT);
         game.getTanks().add(tank1);
         game.getTanks().add(tank2);
@@ -148,7 +148,7 @@ public class BattleMap {
         Turn turn;
         for (Player value : game.getPlayers()) {
             turn = new Turn(false, value.getTank().getMp().getDirection());
-            turns.add(turn);
+            game.getTurns().add(turn);
         }
     }
 
